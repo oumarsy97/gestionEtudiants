@@ -1,6 +1,7 @@
 
 #ifndef BIBLIOTHEQUE_H
 #define BIBLIOTHEQUE_H
+void dateAujourdhui(char* date);
 int connexion ();
 int menuAdmin();
 int menuGestionEtudiant();
@@ -57,9 +58,13 @@ typedef struct Date {
 } Date;
 typedef struct  Presence {
     int matricule;
-    int presence;
+    int presence ;
     Date date; 
 } Presence;
+int rappel();
+int MenuPresence();
+void addPresence(const char* nomFichier,int matricule, int presence);
+
 
 /****************partie etudiant*****************/
 int menuEtudiant();

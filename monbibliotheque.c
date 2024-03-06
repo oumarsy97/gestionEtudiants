@@ -6,6 +6,18 @@
 #include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <time.h>
+void dateAujourdhui(char* date) {
+    time_t maintenant;
+    struct tm* infoTemps;
+    char buffer[80];
+
+    time(&maintenant);
+    infoTemps = localtime(&maintenant);
+
+    strftime(buffer, 80, "%d/%m/%Y", infoTemps);
+    sprintf(date, "%s", buffer);
+}
 
 void saveUserToFile(User user) {
     FILE *file = fopen("users.bin", "ab");  // ouverture du fichier en mode ajout binaire
@@ -255,31 +267,52 @@ int listeEtudiants(const char* nomFichier, int idClasse){
             }
         }
         fclose(fichier);
+        printf("0_________RETOUR\n");
         do{
-        printf(" veillez choisir un etudiant\n");
+        printf(" veillez entrer le matricule d un etudiant\n");
         scanf("%d", &choix);
         while(getchar() != '\n');
-        if(choix < 1 || choix > etudiant.matricule) printf("Choix invalide veuillez recommencer\n");
-    }while(choix < 1 || choix > etudiant.matricule);
+        if((choix < 1 && choix != 0)  || (choix > etudiant.matricule  && choix != 0)) printf("Choix invalide veuillez recommencer\n");
+    }while(choix < 0 || choix > etudiant.matricule );
     return choix;
     }
     
     }
 
-    void addPresence(int matricule, int presence){
-        FILE *fichier = fopen("presences.bin", "rb");
-        if(fichier != NULL){
-            Presence p;
-            p.matricule = matricule;
-            p.presence = presence;
-            
-            fwrite(&p, sizeof(Presence), 1, fichier);
-            printf("Presence ajoutée avec succès.\n");
-            fclose(fichier);
+    
+
+    void addPresence(const char* nomFichier, int matricule, int presence) {
+    FILE *fichier = fopen(nomFichier, "rb+");
+    if(fichier != NULL) {
+        Presence p, p1;
+        p.matricule = matricule;
+        p.presence = presence;
+        char date[11];  
+        dateAujourdhui(date);
+        p.date.jour = (date[0] - '0') * 10 + (date[1] - '0');
+        p.date.mois = (date[3] - '0') * 10 + (date[4] - '0');
+        p.date.annee = (date[6] - '0') * 1000 + (date[7] - '0') * 100 + (date[8] - '0') * 10 + (date[9] - '0');
+
+        int presenceDejaAjoutee = 0;
+
+        // Vérifier si la présence est déjà ajoutée dans le fichier
+        while(fread(&p1, sizeof(Presence), 1, fichier) == 1){
+            if(p1.matricule == p.matricule && p1.date.jour == p.date.jour && p1.date.mois == p.date.mois && p1.date.annee == p.date.annee){
+                printf("La présence est déjà ajoutée.\n");
+                presenceDejaAjoutee = 1;
+                break;
+            }
         }
 
+        if (!presenceDejaAjoutee) {
+            // Si la présence n'est pas déjà ajoutée, on l'ajoute
+            fwrite(&p, sizeof(Presence), 1, fichier);
+            printf("Présence ajoutée avec succès.\n");
+        }
 
+        fclose(fichier);
     }
+}
     
 
 
