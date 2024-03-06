@@ -15,20 +15,22 @@ int main()
         Classe classe={3, "L3", {}, 0};
        //enregistrerClasses( "classes.bin",classe);
     
-    Etudiant etudiant = {124,"mouhamed","Diop", "Mouhamed", 1, 0, 0};
-   // addEtudiant("etudiants.bin", etudiant);
-     User user = {"etudiant", "etudiant", 0};
+    Etudiant etudiant = {125,"etudiant1","Gaye", "Fallou", 1, 0, 0};
+    //addEtudiant("etudiants.bin", etudiant);
+     User user = {"etudiant1", "etudiant1", 0};
 
 
-    //saveUserToFile(user);
+   // saveUserToFile(user);
     char password[20];
     int i = 0;
     char ch;
+    char login[20];
    do{ 
       
    do
    {
-   con = connexion();
+    
+   con = connexion(login);
     if(con != 1 && con != 0) printf("\nIdentifiants incorrects Veuillez reessayer\n");
    } while (con != 1 && con != 0);
 
@@ -51,7 +53,7 @@ do{
     if (choix2 == 1){
         
         int idclasse = listeClasses("classes.bin");
-        
+
          matricule = listeEtudiants("etudiants.bin", idclasse);
         addPresence( "presences.bin",matricule,1);
 
@@ -63,11 +65,14 @@ do{
    }
     
    else if (con == 0){
+    int matrice =getMatriculeFromFile(login, "etudiants.bin");
+    //recuperer la matricule
+
     
     int choix = menuEtudiant();
 
      if(choix ==1){
-         addPresence( "presences.bin",124,1);
+         addPresence( "presences.bin",matrice,1);
      }
      if (choix == 4){
         decon =1;

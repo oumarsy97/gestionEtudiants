@@ -2,7 +2,7 @@
 #ifndef BIBLIOTHEQUE_H
 #define BIBLIOTHEQUE_H
 void dateAujourdhui(char* date);
-int connexion ();
+int connexion (char login[]);
 int menuAdmin();
 int menuGestionEtudiant();
 int ajouterEtudiant();
@@ -68,6 +68,7 @@ void addPresence(const char* nomFichier,int matricule, int presence);
 
 /****************partie etudiant*****************/
 int menuEtudiant();
+int getMatriculeFromFile(const char* login, const char* filename);
 
 
 #endif

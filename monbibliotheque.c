@@ -46,7 +46,7 @@ void displayUsersFromFile() {
 }
 
 
-int verifierIdentifiants(char login[], char password[]) {
+int verifierIdentifiants(char login[], char password[] ) {
     FILE *fichier = fopen("users.bin", "rb");  
     if (fichier != NULL) {
         User utilisateur;
@@ -65,8 +65,8 @@ int verifierIdentifiants(char login[], char password[]) {
 }
 
 
-int connexion(){
-    char login[20];
+int connexion(char login[]) {
+    
    
     printf("Entrez votre login : ");
     scanf("%s", login);
@@ -334,4 +334,29 @@ int menuEtudiant(){
     return choix;
     
     
+}
+
+
+int getMatriculeFromFile(const char* login, const char* filename) {
+    FILE *file = fopen(filename, "r"); // Ouvrir le fichier en mode lecture
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return -1; // Valeur de retour indiquant une erreur
+    }
+
+    Etudiant etudiant;
+    int matricule = -1;
+
+    // Rechercher le login dans le fichier
+     while (fread(&etudiant, sizeof(Etudiant), 1, file) == 1) {
+        if (strcmp(login, etudiant.login) == 0) {
+            matricule = etudiant.matricule;
+            break;
+        }
+    }
+
+
+    fclose(file); // Fermer le fichier après avoir terminé la lecture
+
+    return matricule;
 }
