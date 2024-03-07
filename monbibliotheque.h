@@ -13,6 +13,8 @@ void afficherEtudiants();
 // int marquerPresence();
 // int envoyerMessage();
 
+void displayUsersFromFile();
+
 /*********** partie admin *********/
 
 typedef struct  {
@@ -20,6 +22,7 @@ typedef struct  {
     char password[20];
     int type;
 }User;
+void enregistrerUser(User utilisateur);
 void saveUserToFile(User user);
 
 void displayUsersFromFile();
@@ -52,6 +55,9 @@ void enregistrerClasses(const char* nomFichier, Classe classe);
 int listeEtudiants(const char* nomFichier, int idClasse);
 
 typedef struct Date {
+    int minute;
+    int seconde;
+    int heure;
     int jour;
     int mois;
     int annee;
@@ -64,11 +70,18 @@ typedef struct  Presence {
 int rappel();
 int MenuPresence();
 void addPresence(const char* nomFichier,int matricule, int presence);
+void listePresence(const char* nomFichier);
+void incrementPresence(const char* login, const char* filename);
+void listePresences(const char* nomFichier);
+void listePresencesAuneDate(const char* nomFichier, int jour, int mois, int annee);
+void addPresenceAdmin(char login[]);
+int verifieMatricule(int *matricule);
+
+int  SaisieMotDePasse( char login[], char password []);
 
 
 /****************partie etudiant*****************/
 int menuEtudiant();
 int getMatriculeFromFile(const char* login, const char* filename);
-
 
 #endif

@@ -7,7 +7,8 @@ int main()
 {
 
      
-    
+        //printf("\xE2\x9C\x85\n"); // Afficher l'emoji "✅"
+   
 
     int choix;
     int con,decon=0;
@@ -15,12 +16,10 @@ int main()
         Classe classe={3, "L3", {}, 0};
        //enregistrerClasses( "classes.bin",classe);
     
-    Etudiant etudiant = {125,"etudiant1","Gaye", "Fallou", 1, 0, 0};
+    Etudiant etudiant = {125,"etudiant0","Diop", "Khadim", 1, 1, 0};
     //addEtudiant("etudiants.bin", etudiant);
-     User user = {"etudiant1", "etudiant1", 0};
-
-
-   // saveUserToFile(user);
+    User user = {"etudiant1", "etudiant1", 0};
+    //enregistrerUser(user);
     char password[20];
     int i = 0;
     char ch;
@@ -37,6 +36,7 @@ int main()
 
 
 do{
+
    if (con == 1){
     
       int choix = menuAdmin();
@@ -46,18 +46,12 @@ do{
        case 1:  choix2 = menuGestionEtudiant();
        break;
     
-    case 3: 
-    choix2 = menuPresence();
-    int matricule ;
+    case 3: listePresencesAuneDate("presences.bin", 7, 3, 2024);
+          //addPresenceAdmin( login);
+         break;
     
-    if (choix2 == 1){
-        
-        int idclasse = listeClasses("classes.bin");
-
-         matricule = listeEtudiants("etudiants.bin", idclasse);
-        addPresence( "presences.bin",matricule,1);
-
-            }   
+    case 4:listeEtudiants("etudiants.bin", classe.id);
+    
           break; 
        case 5: decon = 1;     
     }

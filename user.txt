@@ -1,0 +1,3 @@
+etudiant etudiant 0
+admin admin 1
+etudiant1 etudiant1 0
