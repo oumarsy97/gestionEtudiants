@@ -45,9 +45,13 @@ do{
         int choix2;
        case 1:  choix2 = menuGestionEtudiant();
        break;
+       case 2: genererFichierPresencesAujourdhui();
+       afficherPresencesAujourdhui();
+       break;
     
-    case 3: listePresencesAuneDate("presences.bin", 7, 3, 2024);
-          //addPresenceAdmin( login);
+    case 3: //listePresencesAuneDate("presences.bin", 7, 3, 2024);
+          addPresenceAdmin( login);
+          enregistrerPresence( 125,1);
          break;
     
     case 4:listeEtudiants("etudiants.bin", classe.id);

@@ -345,44 +345,7 @@ int listeEtudiants(const char* nomFichier, int idClasse){
 }
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-
-void enregistrerPresence(int matricule, int presence) {
-    FILE *fichier = fopen("presences.bin", "ab");
-
-    if (fichier != NULL) {
-        Presence newPresence;
-        newPresence.matricule = matricule;
-        newPresence.presence = presence;
-        // Supposons que vous souhaitez enregistrer la date actuelle
-        // Vous pouvez obtenir la date actuelle en utilisant des fonctions de date et heure
-        // Par exemple, time(), localtime(), etc.
-
-        // Exemple d'obtention de la date actuelle
-        time_t t = time(NULL);
-        struct tm *tm = localtime(&t);
-
-        newPresence.date.annee = tm->tm_year + 1900;
-        newPresence.date.mois = tm->tm_mon + 1;
-        newPresence.date.jour = tm->tm_mday;
-        newPresence.date.heure = tm->tm_hour;
-        newPresence.date.minute = tm->tm_min;
-        newPresence.date.seconde = tm->tm_sec;
-
-        fwrite(&newPresence, sizeof(Presence), 1, fichier);
-        printf("Presence ajoutée avec succès.\n");
-
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
-}
-
- void addPresence(const char* nomFichier, int matricule, int presence) {
+    void addPresence(const char* nomFichier, int matricule, int presence) {
     FILE *fichier = fopen(nomFichier, "rb");
    
     if(fichier != NULL ) {
@@ -404,6 +367,8 @@ void enregistrerPresence(int matricule, int presence) {
              printf( "La presence est déjà ajoutée dans le fichier.\n");
                    
             if(p1.matricule == p.matricule ) {
+               
+                    return;
             
                 presenceDejaAjoutee = 1;
                 break;
@@ -525,77 +490,6 @@ int SaisieMotDePasse( char login[], char* password) {
     printf("\n"); 
     
 }
-
-
-int verifierPresence(int matricule) {
-    FILE *fichier = fopen("presences.bin", "rb");
-    int matriculePresent = 1; // Supposons par défaut que la matricule n'est pas présente
-
-    if (fichier != NULL) {
-        Presence presenceData;
-        while (fread(&presenceData, sizeof(Presence), 1, fichier) == 1) {
-            // Supposons que nous voulons vérifier uniquement pour la date actuelle
-            time_t t = time(NULL);
-            struct tm *tm = localtime(&t);
-            int annee = tm->tm_year + 1900;
-            int mois = tm->tm_mon + 1;
-            int jour = tm->tm_mday;
-
-            if (presenceData.matricule == matricule && presenceData.date.annee == annee && presenceData.date.mois == mois && presenceData.date.jour == jour) {
-                matriculePresent = 0;
-                break;
-            }
-        }
-
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
-
-    return matriculePresent;
-}
-
-void genererFichierPresencesAujourdhui() {
-    FILE *fichierEntree = fopen("presences.bin", "rb");
-    FILE *fichierSortie = fopen("presences_aujourdhui.bin", "wb");
-
-    if (fichierEntree != NULL && fichierSortie != NULL) {
-        Presence presenceData;
-        // Supposons que nous voulons filtrer pour la date actuelle
-        time_t t = time(NULL);
-        struct tm *tm = localtime(&t);
-        int annee = tm->tm_year + 1900;
-        int mois = tm->tm_mon + 1;
-        int jour = tm->tm_mday;
-
-        while (fread(&presenceData, sizeof(Presence), 1, fichierEntree) == 1) {
-            if (presenceData.date.annee == annee && presenceData.date.mois == mois && presenceData.date.jour == jour) {
-                fwrite(&presenceData, sizeof(Presence), 1, fichierSortie);
-            }
-        }
-
-        fclose(fichierEntree);
-        fclose(fichierSortie);
-    } else {
-        printf("Erreur lors de l'ouverture des fichiers");
-    }
-}
-
-void afficherPresencesAujourdhui() {
-    FILE *fichier = fopen("presences_aujourdhui.bin", "rb");
-
-    if (fichier != NULL) {
-        Presence presenceData;
-        while (fread(&presenceData, sizeof(Presence), 1, fichier) == 1) {
-            printf("Matricule: %d, Présence: %d, Date: %d/%d/%d\n", presenceData.matricule, presenceData.presence, presenceData.date.jour, presenceData.date.mois, presenceData.date.annee);
-        }
-
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
-}
-
 void addPresenceAdmin(char login[]){
     char input[20], password[20];
     int matricule,s=1;
@@ -622,9 +516,8 @@ void addPresenceAdmin(char login[]){
         if(!verifieMatricule(&matricule)) printf("Matricule invalide \n");
        
         else {
-             if (verifierPresence(matricule))
-            enregistrerPresence( matricule,1);
-            else  printf("Presence deja marquee \n");
+             
+            addPresence( "presences.bin",matricule,1);
             }
 
     }

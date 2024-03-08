@@ -53,8 +53,7 @@ typedef struct Classe {
 void enregistrerClasses(const char* nomFichier, Classe classe);
 
 int listeEtudiants(const char* nomFichier, int idClasse);
-
-typedef struct Date {
+typedef struct  {
     int minute;
     int seconde;
     int heure;
@@ -62,10 +61,11 @@ typedef struct Date {
     int mois;
     int annee;
 } Date;
-typedef struct  Presence {
+
+typedef struct  {
     int matricule;
-    int presence ;
-    Date date; 
+    Date date;
+    int presence;
 } Presence;
 int rappel();
 int MenuPresence();
@@ -78,6 +78,10 @@ void addPresenceAdmin(char login[]);
 int verifieMatricule(int *matricule);
 
 int  SaisieMotDePasse( char login[], char password []);
+void enregistrerPresence( int matricule, int presence);
+void genererFichierPresencesAujourdhui();
+void afficherPresencesAujourdhui();
+
 
 
 /****************partie etudiant*****************/
