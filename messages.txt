@@ -1,0 +1,21 @@
+admin bonjour 100 pape gaye 10/3/2024 à 11:2:11 etat: 0
+admin vient 101 aly Diop 10/3/2024 à 11:4:40 etat: 0
+admin Bonsoir 103 Fatou Ndiaye 10/3/2024 à 11:12:10 etat: 0
+admin a 102 Codu Fall 10/3/2024 à 11:15:3 etat: 0
+admin bye 101 aly Diop 10/3/2024 à 11:16:45 etat: 0
+admin bonsoir 103 Fatou Ndiaye 10/3/2024 à 11:18:23 etat: 0
+admin ciao 100 pape gaye 10/3/2024 à 11:20:25 etat: 0
+admin a 100 pape gaye 10/3/2024 à 11:20:47 etat: 0
+admin bonjour a demain inchalla 102 Codu Fall 10/3/2024 à 11:50:26 etat: 0
+admin demain on fait html/css kou paréwoul do dougou 100 pape gaye 10/3/2024 à 11:53:57 etat: 0
+admin bonjour la classe 100 pape gaye 10/3/2024 à 12:35:0 etat: 0
+admin bonjour la classe 101 aly Diop 10/3/2024 à 12:35:0 etat: 0
+admin bonjour la classe 102 Codu Fall 10/3/2024 à 12:35:0 etat: 0
+admin wa ref diggggggg 100 pape gaye 10/3/2024 à 12:38:23 etat: 0
+admin wa ref diggggggg 101 aly Diop 10/3/2024 à 12:38:23 etat: 0
+admin wa ref diggggggg 102 Codu Fall 10/3/2024 à 12:38:23 etat: 0
+admin kay len agne 100 pape gaye 10/3/2024 à 13:31:0 etat: 0
+admin kay len agne 101 aly Diop 10/3/2024 à 13:31:0 etat: 0
+admin kay len agne 102 Codu Fall 10/3/2024 à 13:31:0 etat: 0
+admin kay len agne 103 Fatou Ndiaye 10/3/2024 à 13:31:0 etat: 0
+admin kay len agne 104 Ousmane Ndiaye 10/3/2024 à 13:31:0 etat: 0

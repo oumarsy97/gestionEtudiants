@@ -13,7 +13,10 @@ void afficherEtudiants();
 // int marquerPresence();
 // int envoyerMessage();
 
+
 void displayUsersFromFile();
+void hashPassword(const char *password, char *hashedPassword);
+int verifyPassword(const char *password, const char *hashedPassword);
 
 /*********** partie admin *********/
 
@@ -27,12 +30,11 @@ void saveUserToFile(User user);
 
 void displayUsersFromFile();
 
-typedef struct {
-    
+typedef struct { 
     int matricule;
     char login[20];
-    char nom[100];
-    char prenom[100];
+    char prenom[20];
+    char nom[20];
     int classe;
     int presence;
     int absence;
@@ -46,8 +48,6 @@ int listeClasses();
 typedef struct Classe {
     int id;
     char libelle[50];
-    Etudiant etudiants[10];
-    int nbEtudiants;
 }Classe;
 
 void enregistrerClasses(const char* nomFichier, Classe classe);
@@ -79,13 +79,43 @@ int verifieMatricule(int *matricule);
 
 int  SaisieMotDePasse( char login[], char password []);
 void enregistrerPresence( int matricule, int presence);
+int verifierPresence( int matricule);
 void genererFichierPresencesAujourdhui();
 void afficherPresencesAujourdhui();
+void enregistreEtudiant(Etudiant etudiant, char *nomFichier);
+void enregistrer_date_fichier(Date date);
+void afficher_dates(const char *nom_fichier) ;
+int date_existe( Date date);
+void afficherAunedate();
+Etudiant rechercheEtudiant(int);
+int menuFichier();
+void listeComplet(void);
+void parcourirFichier();
+typedef struct {
+    char source[20];
+    int matricule;
+    char nom[20];
+    char prenom[20];
+    char message[100];
+    Date date;
+    int etat;
+} Message;
 
-
+Classe diokhClasse(int);
+int sousMenu4();
+void envoieMsg(int matricule, char *message) ;
+void Messageaetudiant();
+void rechercher_etudiants_par_id(int id_classe, int tableau_etudiants[],int *nb_etudiants);
+void messageClasse(int id);
+void les_mat(int tab[100],int *nb);
+void messageaTous();
+void lireMessage(int matricule);
 
 /****************partie etudiant*****************/
 int menuEtudiant();
 int getMatriculeFromFile(const char* login, const char* filename);
+
+
+
 
 #endif

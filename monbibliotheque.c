@@ -10,6 +10,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <openssl/sha.h>
+
+#define Yellow "\x1B[33m"
+#define Reset "\x1B[0m"
+#define Green "\x1B[32m"
+#define Red "\x1B[31m"
+#define Blue "\x1B[34m"
+#define Magenta "\x1B[35m"
+#define Cyan "\x1B[36m"
+#define White "\x1B[37m"
+
 void dateAujourdhui(char* date) {
     time_t maintenant;
     struct tm* infoTemps;
@@ -23,11 +34,35 @@ void dateAujourdhui(char* date) {
 }
 
 
-void enregistrerUser(User utilisateur) {
+// void hashPassword(const char *password, char *hashedPassword) {
+//     unsigned char hash[SHA256_DIGEST_LENGTH];
+//     SHA256_CTX sha256;
+//     SHA256_Init(&sha256);
+//     SHA256_Update(&sha256, password, strlen(password));
+//     SHA256_Final(hash, &sha256);
+
+//     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+//         sprintf(hashedPassword + (i * 2), "%02x", hash[i]);
+//     }
+//     hashedPassword[64] = 0; // Ajouter le caractère de fin de chaîne
+// }
+
+// int verifyPassword(const char *inputPassword, const char *storedHash) {
+//     char hashedInput[65];
+//     hashPassword(inputPassword, hashedInput);
+//     if (strcmp(hashedInput, storedHash) == 0) {
+//         return 1; // Mot de passe correct
+//     } else {
+//         return 0; // Mot de passe incorrect
+//     }
+// }
+
+
+void enregistrerUser(User user) {
     FILE *fichier = fopen("user.txt", "a");
     if (fichier != NULL) {
-        fprintf(fichier, "%s %s %d\n", utilisateur.login, utilisateur.password, utilisateur.type);
-        fclose(fichier);
+        fprintf(fichier, "%s %s %d\n", user.login, user.password, user.type);
+       fclose(fichier);
     } else {
         printf("Erreur lors de l'ouverture du fichier");
     }
@@ -61,23 +96,9 @@ void displayUsersFromFile() {
 }
 
 
-int verifierIdentifiants(char login[], char password[] ) {
-    FILE *fichier = fopen("users.bin", "rb");  
-    if (fichier != NULL) {
-        User utilisateur;
-        while (fread(&utilisateur, sizeof(User), 1, fichier) == 1) {  // lecture des utilisateurs depuis le fichier
-            if (strcmp(utilisateur.login, login) == 0 && strcmp(utilisateur.password, password) == 0) {
-                fclose(fichier);  // fermeture du fichier
-                return utilisateur.type;  // retourne le type d'utilisateur si les identifiants sont corrects
-            }
-        }
-        fclose(fichier);  // fermeture du fichier
-    } else {
-        printf("Erreur lors de l'ouverture du fichier.\n");
-    }
-    
-    return -1;  // retourne -1 si les identifiants ne correspondent à aucun utilisateur
-}
+
+
+
 
 int verifierUtilisateur(char login [], char motDePasse []) {
     FILE *fichier = fopen("user.txt", "r");
@@ -88,9 +109,8 @@ int verifierUtilisateur(char login [], char motDePasse []) {
     if (fichier != NULL) {
         while (fgets(buffer, 100, fichier) != NULL) {
 
-            sscanf(buffer, "%s %s %d", utilisateur.login, utilisateur.password, &utilisateur.type);
+            sscanf(buffer, "%s %s  %d", utilisateur.login, utilisateur.password, &utilisateur.type);
             if (strcmp(login, utilisateur.login) == 0 && strcmp(motDePasse, utilisateur.password) == 0) {
-                printf("Authentification reussie.\n");
                 trouve = utilisateur.type;
                 break;
             }
@@ -165,7 +185,7 @@ int menuAdmin()
     printf("5_________Quitter\n");
     scanf("%d", &choix);
     while(getchar() != '\n');
-    if(choix < 1 || choix > 5) printf("Choix invalide veuillez recommencer\n");
+    if(choix!=1 && choix!=2 && choix!=3 && choix!=4 && choix!=5) printf("Choix invalide veuillez recommencer\n");
 
     }while(choix < 1 || choix > 5);
 
@@ -184,7 +204,7 @@ int menuGestionEtudiant()
     printf("\t5_________Retour\n");
     scanf("%d", &choix);
     while(getchar() != '\n');
-    if(choix < 1 || choix > 5) printf("Choix invalide veuillez recommencer\n");
+    if(choix < 1 || choix > 5) printf("Choix invalide veuillez recommencer !!\n");
 
     }while(choix < 1 || choix > 5);
 
@@ -258,44 +278,33 @@ void enregistrerClasses(const char* nomFichier, Classe nouvelleClasse) {
     }
 }
 
-int listeClasses(const char* nomFichier){
-    int id;
-  
-    FILE *fichier = fopen(nomFichier, "rb");  // ouverture du fichier en mode lecture binaire
-    
-    if (fichier != NULL) {
-        Classe classe;
-         if (fichier != NULL) {
-        Classe classe;
-        while (fread(&classe, sizeof(Classe), 1, fichier) == 1) {  // lecture des classes depuis le fichier
-            printf(" %d  %s  nbEtudiants: %d\n", classe.id, classe.libelle, classe.nbEtudiants);
-            // Lire et afficher les étudiants si nécessaire
-        }
-        fclose(fichier); 
-        do{
-            printf("choisir une classe\n");
-            scanf("%d", &id);
-            while(getchar() != '\n');
-            if(id < 1 || id > classe.id) printf("Choix invalide veuillez recommencer\n");
-        } while (id < 1 || id > classe.id);
-        return id;
 
-    } else {
-        printf("Erreur lors de l'ouverture du fichier.\n");
-    }
-}
- return 0;
-}
+// void addEtudiant(const char* nomFichier, Etudiant nouvelEtudiant){
+//     FILE *fichier = fopen(nomFichier, "ab");
+//     if(fichier != NULL){
+//         fwrite(&nouvelEtudiant, sizeof(Etudiant), 1, fichier);
+//         printf("Etudiant ajouté avec succès.\n");
+//         // User user;
+//         // strcpy(user.login, nouvelEtudiant.login);
+//         // strcpy(user.password, "passer");
+//         // user.type = 0;
+//         // enregistrerUser(user);
+//         fclose(fichier);
+//     }
+// }
+
 
 void addEtudiant(const char* nomFichier, Etudiant nouvelEtudiant){
-    FILE *fichier = fopen(nomFichier, "ab");
+    FILE *fichier = fopen(nomFichier, "a"); // Utilisation d'un fichier texte .txt
+
     if(fichier != NULL){
-        fwrite(&nouvelEtudiant, sizeof(Etudiant), 1, fichier);
+        fprintf(fichier,  "%d %s %s %s %d %d %d\n", nouvelEtudiant.matricule, nouvelEtudiant.login, nouvelEtudiant.nom, nouvelEtudiant.prenom, nouvelEtudiant.classe, nouvelEtudiant.presence, nouvelEtudiant.absence);
         printf("Etudiant ajouté avec succès.\n");
         fclose(fichier);
+    } else {
+        printf("Erreur lors de l'ouverture du fichier");
     }
 }
-
 int listeEtudiants(const char* nomFichier, int idClasse){
     int choix;
     FILE *fichier = fopen(nomFichier, "rb");
@@ -320,8 +329,6 @@ int listeEtudiants(const char* nomFichier, int idClasse){
     
     }
 
-   
-
     void incrementPresence(const char* login, const char* filename) {
     FILE *file = fopen(filename, "rb+"); // Ouvrir le fichier en mode lecture/écriture binaire
     if (file == NULL) {
@@ -344,134 +351,20 @@ int listeEtudiants(const char* nomFichier, int idClasse){
     fclose(file); // Fermer le fichier après avoir terminé la modification
 }
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-
-void enregistrerPresence(int matricule, int presence) {
-    FILE *fichier = fopen("presences.bin", "ab");
-
-    if (fichier != NULL) {
-        Presence newPresence;
-        newPresence.matricule = matricule;
-        newPresence.presence = presence;
-        // Supposons que vous souhaitez enregistrer la date actuelle
-        // Vous pouvez obtenir la date actuelle en utilisant des fonctions de date et heure
-        // Par exemple, time(), localtime(), etc.
-
-        // Exemple d'obtention de la date actuelle
-        time_t t = time(NULL);
-        struct tm *tm = localtime(&t);
-
-        newPresence.date.annee = tm->tm_year + 1900;
-        newPresence.date.mois = tm->tm_mon + 1;
-        newPresence.date.jour = tm->tm_mday;
-        newPresence.date.heure = tm->tm_hour;
-        newPresence.date.minute = tm->tm_min;
-        newPresence.date.seconde = tm->tm_sec;
-
-        fwrite(&newPresence, sizeof(Presence), 1, fichier);
-        printf("Presence ajoutée avec succès.\n");
-
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
-}
-
- void addPresence(const char* nomFichier, int matricule, int presence) {
-    FILE *fichier = fopen(nomFichier, "rb");
-   
-    if(fichier != NULL ) {
-        Presence p, p1;
-        p.matricule = matricule;
-        p.presence = presence;
-        char date[20];  
-        dateAujourdhui(date);
-        p.date.jour = (date[0] - '0') * 10 + (date[1] - '0');
-        p.date.mois = (date[3] - '0') * 10 + (date[4] - '0');
-        p.date.annee = (date[6] - '0') * 1000 + (date[7] - '0') * 100 + (date[8] - '0') * 10 + (date[9] - '0');
-        p.date.heure = (date[11] - '0') * 10 + (date[12] - '0');
-        p.date.minute = (date[14] - '0') * 10 + (date[15] - '0');
-        
-        int presenceDejaAjoutee = 0;
-
-        // Vérifier si la présence est déjà ajoutée dans le fichier
-        while (fread(&p1, sizeof(Presence), 1, fichier) == 1)  {
-             printf( "La presence est déjà ajoutée dans le fichier.\n");
-                   
-            if(p1.matricule == p.matricule ) {
-            
-                presenceDejaAjoutee = 1;
-                break;
-            }
-        }
-
-        if (!presenceDejaAjoutee) {
-            // Si la présence n'est pas déjà ajoutée, on l'ajoute
-            fseek(fichier, 0, SEEK_END);
-            fwrite(&p, sizeof(Presence), 1, fichier);
-            printf( "\xE2\x9C\x85 code valide, présence à :  %d:%d\n", p.date.heure, p.date.minute);
-        }
-
-        fclose(fichier);
-    } else {
-        printf( "Impossible d'ouvrir le fichier.\n");
-    }
-}
-
-void listePresences(const char* nomFichier) {
-    FILE *fichier = fopen(nomFichier, "rb");
-    if(fichier != NULL) {
-        Presence presence;
-        printf("mat Presence Date\n");
-        while(fread(&presence, sizeof(Presence), 1, fichier) == 1){
-            printf("%d %d %d %d %d\n", presence.matricule, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
-        }
-        fclose(fichier);
-    }
-}
-void listePresencesAuneDate(const char* nomFichier, int jour, int mois, int annee) {
-    FILE *fichier = fopen(nomFichier, "rb"); // Ouvrir le fichier en mode écriture
-    if(fichier != NULL) {
-        Presence presence;
-        
-        while(fread(&presence, sizeof(Presence), 1, fichier) == 1){
-            printf( "mat Presence Date\n"); // Écrire l'en-tête dans le fichier
-            if(presence.date.jour == jour && presence.date.mois == mois && presence.date.annee == annee){
-                printf("%d %d %d %d %d\n", presence.matricule, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
-            }
-        }
-        fclose(fichier); // Fermer le fichier après écriture
-    }
-}
-// void listePresencesAuneDate(const char* nomFichier, int jour, int mois, int annee) {
-//     FILE *fichier = fopen(nomFichier, "rb");
-//     if(fichier != NULL) {
-//         Presence presence;
-//         printf("mat Presence Date\n");
-//         while(fread(&presence, sizeof(Presence), 1, fichier) == 1){
-//             if(presence.date.jour == jour && presence.date.mois == mois && presence.date.annee == annee){
-//                 printf("%d %d %d %d %d\n", presence.matricule, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
-//             }
-//         }
-//         fclose(fichier);
-//     }
-// }
 int verifieMatricule(int *matricule){
-    FILE *f = fopen("etudiants.bin", "rb");
+    FILE *f = fopen("etudiants.txt", "r");
     if (f == NULL) {
         printf("Impossible d'ouvrir le fichier.\n");
         return 0;
     }
     Etudiant e;
-    while (fread(&e, sizeof(Etudiant), 1, f) == 1) {
+    while (fscanf(f, "%d %s %s %s %d %d %d", &e.matricule,e.login, e.nom, e.prenom, &e.classe, &e.presence, &e.absence) != EOF) {
+        //printf("%d %s %s %s %d %d %d\n", e.matricule,e.login, e.nom, e.prenom, e.classe, e.presence, e.absence);
         if (e.matricule == *matricule) {
+            //printf("matricule existe\n");
+            fclose(f);
             return 1;
-        }
+        } 
     }
     fclose(f);
     return 0;
@@ -492,8 +385,6 @@ int SaisieMotDePasse( char login[], char* password) {
     tcsetattr(STDIN_FILENO, TCSANOW, &new_term);  // applique les nouveaux paramètres du terminal
     while (1) {
         ch = getchar();
-        
-
         
         if (ch == 10 && sizeof(password)!=0) {  // 10 is the ASCII code for Enter
             break;
@@ -527,80 +418,77 @@ int SaisieMotDePasse( char login[], char* password) {
 }
 
 
+
+
 int verifierPresence(int matricule) {
-    FILE *fichier = fopen("presences.bin", "rb");
+    FILE *fichier = fopen("presences.txt", "r");
     int matriculePresent = 1; // Supposons par défaut que la matricule n'est pas présente
 
     if (fichier != NULL) {
-        Presence presenceData;
-        while (fread(&presenceData, sizeof(Presence), 1, fichier) == 1) {
-            // Supposons que nous voulons vérifier uniquement pour la date actuelle
+        Presence newPresence;
+          char line[100];
+          char nom[20], prenom[20];
+         
+          while (fscanf(fichier, "%d %s %s présent Date: %d/%d/%d à %d:%d:%d ", &newPresence.matricule, nom, prenom, &newPresence.date.jour, &newPresence.date.mois, &newPresence.date.annee, &newPresence.date.heure, &newPresence.date.minute, &newPresence.date.seconde) != EOF) {
+           // printf("%d %s %s présent Date: %d/%d/%d", newPresence.matricule, nom, prenom, newPresence.date.jour, newPresence.date.mois, newPresence.date.annee);
+         // Supposons que nous voulons vérifier uniquement pour la date actuelle
             time_t t = time(NULL);
             struct tm *tm = localtime(&t);
             int annee = tm->tm_year + 1900;
             int mois = tm->tm_mon + 1;
             int jour = tm->tm_mday;
 
-            if (presenceData.matricule == matricule && presenceData.date.annee == annee && presenceData.date.mois == mois && presenceData.date.jour == jour) {
-                matriculePresent = 0;
-                break;
-            }
+            // ... (restez inchangé)
+           if(matricule == newPresence.matricule && annee == newPresence.date.annee && mois == newPresence.date.mois && jour == newPresence.date.jour){
+          // printf("%d %s %s est presente\n", newPresence.matricule, nom, prenom);
+               matriculePresent = 0;
+               break; 
+           }
+           
+
         }
 
         fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
+    } 
 
     return matriculePresent;
 }
 
-void genererFichierPresencesAujourdhui() {
-    FILE *fichierEntree = fopen("presences.bin", "rb");
-    FILE *fichierSortie = fopen("presences_aujourdhui.bin", "wb");
 
-    if (fichierEntree != NULL && fichierSortie != NULL) {
-        Presence presenceData;
-        // Supposons que nous voulons filtrer pour la date actuelle
-        time_t t = time(NULL);
-        struct tm *tm = localtime(&t);
-        int annee = tm->tm_year + 1900;
-        int mois = tm->tm_mon + 1;
-        int jour = tm->tm_mday;
 
-        while (fread(&presenceData, sizeof(Presence), 1, fichierEntree) == 1) {
-            if (presenceData.date.annee == annee && presenceData.date.mois == mois && presenceData.date.jour == jour) {
-                fwrite(&presenceData, sizeof(Presence), 1, fichierSortie);
-            }
-        }
+// void enregistrerPresence(int matricule, int presence) {
+//     FILE *fichier = fopen("presences.bin", "ab");
 
-        fclose(fichierEntree);
-        fclose(fichierSortie);
-    } else {
-        printf("Erreur lors de l'ouverture des fichiers");
-    }
-}
+//     if (fichier != NULL) {
+//         Presence newPresence;
+//         newPresence.matricule = matricule;
+//         newPresence.presence = presence;
+//         // Exemple d'obtention de la date actuelle
+//         time_t t = time(NULL);
+//         struct tm *tm = localtime(&t);
 
-void afficherPresencesAujourdhui() {
-    FILE *fichier = fopen("presences_aujourdhui.bin", "rb");
+//         newPresence.date.annee = tm->tm_year + 1900;
+//         newPresence.date.mois = tm->tm_mon + 1;
+//         newPresence.date.jour = tm->tm_mday;
+//         newPresence.date.heure = tm->tm_hour;
+//         newPresence.date.minute = tm->tm_min;
+//         newPresence.date.seconde = tm->tm_sec;
 
-    if (fichier != NULL) {
-        Presence presenceData;
-        while (fread(&presenceData, sizeof(Presence), 1, fichier) == 1) {
-            printf("Matricule: %d, Présence: %d, Date: %d/%d/%d\n", presenceData.matricule, presenceData.presence, presenceData.date.jour, presenceData.date.mois, presenceData.date.annee);
-        }
+//         fwrite(&newPresence, sizeof(Presence), 1, fichier);
+//         enregistrer_date_fichier("date.bin", newPresence.date);
+//          printf( "\xE2\x9C\x85 code valide, présence à : %d:%d \n", newPresence.date.heure, newPresence.date.minute);
 
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier");
-    }
-}
+//         fclose(fichier);
+//     } else {
+//         printf("Erreur lors de l'ouverture du fichier");
+//     }
+// }
 
 void addPresenceAdmin(char login[]){
     char input[20], password[20];
     int matricule,s=1;
      printf("<--------------------------------------------------->\n");
-    printf("----------------MARQUER LES PRESENCES--------------\n");
+    printf("----------------MARQUER LES PRESENCES-----------------\n");
     printf("<--------------------------------------------------->\n");
     
     while(s){
@@ -618,10 +506,10 @@ void addPresenceAdmin(char login[]){
             
         }else{  
 
-        matricule = atoi(input);
-        if(!verifieMatricule(&matricule)) printf("Matricule invalide \n");
-       
-        else {
+            matricule = atoi(input);
+            if(!verifieMatricule(&matricule)) printf("Matricule invalide \n");
+        
+            else {
              if (verifierPresence(matricule))
             enregistrerPresence( matricule,1);
             else  printf("Presence deja marquee \n");
@@ -666,7 +554,7 @@ int getMatriculeFromFile(const char* login, const char* filename) {
     int matricule = -1;
 
     // Rechercher le login dans le fichier
-     while (fread(&etudiant, sizeof(Etudiant), 1, file) == 1) {
+     while (fscanf(file, "%d %s %s %s %d %d %d", &etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF) {
         if (strcmp(login, etudiant.login) == 0) {
             matricule = etudiant.matricule;
             break;
@@ -678,3 +566,425 @@ int getMatriculeFromFile(const char* login, const char* filename) {
 
     return matricule;
 }
+
+/************************************************Fichier*******************************/
+void listePresences(const char* nomFichier) {
+    FILE *fichier = fopen(nomFichier, "rb");
+    if(fichier != NULL) {
+        Presence presence;
+        printf("mat Presence Date\n");
+        while(fread(&presence, sizeof(Presence), 1, fichier) == 1){
+            printf("%d %d %d %d %d\n", presence.matricule, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
+        }
+        fclose(fichier);
+    }
+}
+
+Etudiant rechercheEtudiant(int mat){
+    FILE *fichier = fopen("etudiants.txt","r");
+    if(fichier != NULL) {
+        Etudiant etudiant;
+        while(fscanf(fichier,"%d %s %s %s %d %d %d", &etudiant.matricule,etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF) {
+           // printf("%d %s %s %s %d %d %d\n", etudiant.matricule,etudiant.login, etudiant.nom, etudiant.prenom, etudiant.classe, etudiant.presence, etudiant.absence);
+            if(etudiant.matricule == mat){
+                 //printf("%d %s %s ",etudiant.matricule,etudiant.prenom,etudiant.nom);
+             return etudiant;
+            }
+           
+        }
+    }
+}
+
+void listePresencesAuneDate(const char* nomFichier, int jour, int mois, int annee) {
+    FILE *fichier = fopen(nomFichier, "r");
+    if(fichier != NULL) {
+        Presence presence;
+        while(fscanf(fichier, "%d %d %d %d %d %d %d", &presence.matricule, &presence.presence, &presence.date.jour, &presence.date.mois, &presence.date.annee, &presence.date.heure, &presence.date.minute) != EOF) {
+        if(presence.presence == 1){
+            Etudiant e = rechercheEtudiant(presence.matricule);
+            printf("%d %s %s %d %d %d %d\n", presence.matricule,e.prenom,e.nom, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
+        }
+            if(presence.date.jour == jour && presence.date.mois == mois && presence.date.annee == annee){
+                // Etudiant e = rechercheEtudiant(presence.matricule);
+                // printf("%d %s %s %d %d %d %d\n", presence.matricule,e.prenom,e.nom, presence.presence, presence.date.jour, presence.date.mois, presence.date.annee);
+            }
+        }
+        fclose(fichier);
+    }
+}
+
+
+void afficheTous() {
+    FILE *fichier = fopen("presences.txt", "r");
+    if(fichier != NULL) {
+        Etudiant e;
+        Presence presence;
+        
+      
+        fclose(fichier);
+    }
+}
+
+void genererFichierPresencesAujourdhui() {
+    FILE *fichierEntree = fopen("presences.bin", "rb");
+    FILE *fichierSortie = fopen("presences_aujourdhui.bin", "wb");
+
+    if (fichierEntree != NULL && fichierSortie != NULL) {
+        Presence presenceData;
+        // Supposons que nous voulons filtrer pour la date actuelle
+        time_t t = time(NULL);
+        struct tm *tm = localtime(&t);
+        int annee = tm->tm_year + 1900;
+        int mois = tm->tm_mon + 1;
+        int jour = tm->tm_mday;
+
+        while (fread(&presenceData, sizeof(Presence), 1, fichierEntree) == 1) {
+            if (presenceData.date.annee == annee && presenceData.date.mois == mois && presenceData.date.jour == jour) {
+                fwrite(&presenceData, sizeof(Presence), 1, fichierSortie);
+            }
+        }
+
+        fclose(fichierEntree);
+        fclose(fichierSortie);
+    } else {
+        printf("Erreur lors de l'ouverture des fichiers");
+    }
+}
+
+int date_existe( Date date) {
+    FILE *fichier = fopen("date.txt", "r");
+    if (fichier != NULL) {
+        Date date_lue;
+        while (fscanf(fichier, "%d/%d/%d", &date_lue.jour, &date_lue.mois, &date_lue.annee) != EOF) {
+            printf("%d/%d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
+            
+            if (date_lue.jour == date.jour && date_lue.mois == date.mois && date_lue.annee == date.annee) {
+                fclose(fichier);
+                //printf("Date %d/%d/%d existe dans le fichier\n", date.jour, date.mois, date.annee);
+                return 1; // La date existe dans le fichier
+                }
+        }
+        fclose(fichier);
+    } else {
+        printf("Erreur lors de l'ouverture du fichier");
+    }
+    return 0; // La date n'existe pas dans le fichier
+}
+
+void enregistrer_date_fichier( Date date) {
+     FILE *fichier;
+
+    fichier = fopen("date.txt", "a");
+    if (fichier != NULL) {
+        if(date_existe( date) == 0){
+           // printf("Date %d/%d/%d enregistree avec succes\n", date.jour, date.mois, date.annee);
+        fprintf(fichier, "%d/%d/%d\n", date.jour, date.mois, date.annee);
+        fclose(fichier);
+        }
+        
+    } else {
+        printf("Erreur lors de l'ouverture du fichier");
+    }
+   
+}
+void enregistrerPresence(int matricule, int presence) {
+    FILE *fichier = fopen("presences.txt", "a"); // Utilisation d'un fichier texte .txt
+    Presence newPresence;
+    newPresence.matricule = matricule;
+    Etudiant e= rechercheEtudiant(matricule);
+    newPresence.presence = presence;
+    // Exemple d'obtention de la date actuelle
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    newPresence.date.annee = tm->tm_year + 1900;
+    newPresence.date.mois = tm->tm_mon + 1;
+    newPresence.date.jour = tm->tm_mday;
+    newPresence.date.heure = tm->tm_hour;
+    newPresence.date.minute = tm->tm_min;
+    newPresence.date.seconde = tm->tm_sec;
+    if (fichier != NULL) {
+        // ... (restez inchangé)
+        fprintf(fichier, " %d %s %s présent Date: %d/%d/%d à %d:%d:%d\n", newPresence.matricule,e.prenom,e.nom, newPresence.date.jour, newPresence.date.mois, newPresence.date.annee, newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
+        
+            enregistrer_date_fichier(newPresence.date); // Vous pouvez ajuster cette fonction pour enregistrer dans un fichier texte également
+        
+        
+        printf("\xE2\x9C\x85 code valide, présence à : %d:%d:%d \n", newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
+
+        fclose(fichier);
+    } else {
+        printf("Erreur lors de l'ouverture du fichier");
+    }
+}
+
+void afficher_dates(const char *nom_fichier) {
+    FILE *fichier = fopen(nom_fichier, "rb");
+    if (fichier != NULL) {
+        Date date_lue;
+        while (fread(&date_lue, sizeof(Date), 1, fichier) == 1) {
+            printf("%02d/%02d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
+        }
+        fclose(fichier);
+    } else {
+        // Gérer l'erreur d'ouverture du fichier
+    }
+}
+
+void afficherAunedate() {
+    Date date;
+        printf("veuillez entrer une date jour/mois/annee : \n");
+        scanf("%d%d%d", &date.jour, &date.mois, &date.annee);
+        if(date_existe( date))
+        listePresencesAuneDate("presences.txt", date.jour, date.mois, date.annee);
+        else
+        printf("la date n'existe pas dans le fichier");
+    
+}
+
+int menuFichier(){
+    int choix;
+    do{
+        printf("1_______gererer le fichier de presence\n");
+        printf("2_______gererer le fichier de presence par date\n");
+        printf("3_______retour\n");
+    scanf("%d", &choix);
+    while(getchar() != '\n');
+   // if(choix < 1 || choix > 3) printf("Choix invalide veuillez recommencer\n");
+    } while ( choix < 1 || choix > 3);
+    return choix;
+
+}
+
+    void parcourirFichier() {
+    FILE *fichier = fopen("presences.txt", "r");
+    if (fichier != NULL) {
+        char line[100];
+        Etudiant e;
+        Presence presence;
+        // while (fscanf( "%d %s %s présent Date: %d/%d/%d à %d:%d:%d\n", &presence.matricule, e.nom, e.prenom, &presence.date.jour, &presence.date.mois, &presence.date.annee, &presence.date.heure, &presence.date.minute, &presence.date.seconde) != EOF) {
+            
+        // }
+        
+        fclose(fichier);
+    } else {
+        printf("Impossible d'ouvrir le fichier.\n");
+    }
+}
+
+/******************************Messages*******************************/
+void envoieMsg(int matricule, char *message) {
+    //printf("envoieMsg(%d, %s)\n", matricule, message);
+    Message msg;
+    msg.matricule = matricule;
+    Etudiant e= rechercheEtudiant(matricule);
+    strcpy(msg.message, message);
+    strcpy(msg.source,"admin");
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    msg.date.annee = tm->tm_year + 1900;
+    msg.date.mois = tm->tm_mon + 1;
+    msg.date.jour = tm->tm_mday;
+    msg.date.heure = tm->tm_hour;
+    msg.date.minute = tm->tm_min;
+    msg.date.seconde = tm->tm_sec;
+    msg.etat = 0;
+    FILE *f = fopen("messages.txt", "a");
+    fprintf(f, "%s %s %d %s %s %d/%d/%d à %d:%d:%d etat: %d\n",msg.source,msg.message,msg.matricule, e.prenom, e.nom,msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde, msg.etat);
+    fclose(f);
+    //printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
+}
+
+int sousMenu4(){
+    int choix;
+    do{
+        printf("1_________Envoyer un message à tous\n");
+        printf("2_________Envoyer un message à une classe\n");
+        printf("3_________Envoyer un message à un etudiant\n");
+        printf("4_________Retour\n");
+        scanf("%d", &choix);
+        while(getchar() != '\n');
+        if(choix < 1 || choix > 4) printf("Choix invalide veuillez recommencer\n");
+    
+    }while(choix < 1 || choix > 4);
+    return choix;
+}
+
+void Messageaetudiant(){
+    int matricule;
+    char msg[100];
+    do{
+    printf("veuillez entrer le matricule de l'etudiant : \n");
+    scanf("%d", &matricule);
+    while(getchar() != '\n');
+     if(!verifieMatricule(&matricule)) printf("Matricule invalide \n");
+
+    } while(!verifieMatricule(&matricule)); 
+    printf("veuillez entrer le message : \n");
+    fgets(msg, 100, stdin); // Utilisation de fgets pour lire la chaîne complète
+    msg[strcspn(msg, "\n")] = '\0'; // Suppression du saut de ligne
+    envoieMsg(matricule, msg);
+    printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
+     printf("\033[0m"); 
+
+
+}
+
+
+Classe diokhClasse(int id){
+    
+    FILE *file = fopen("classes.bin", "rb");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        exit(1);
+    }
+
+    Classe temp;
+    while (fread(&temp, sizeof(Classe), 1, file)) {
+        if (temp.id == id) {
+            fclose(file);
+            return temp;
+        }
+    }
+
+    fclose(file);
+    // Retourner une classe par défaut si l'identifiant n'est pas trouvé
+    Classe defaultClasse = { .id = -1, .libelle = "Classe Inconnue" };
+    return defaultClasse;
+}
+   
+  
+void rechercher_etudiants_par_id(int id_classe, int tableau_etudiants[],int *nb_etudiants) {
+    FILE *fichier;
+    char ligne[100];
+    int matricule;
+    Etudiant e;
+    int index = 0;
+
+    fichier = fopen("etudiants.txt", "r");
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.");
+        exit(1);
+    }
+
+    while (fgets(ligne, sizeof(ligne), fichier)) {
+        // Supposons que le format de ligne soit : matricule,ID_classe
+        sscanf(ligne, "%d %s %s %s %d %d %d", &matricule,e.login, e.nom, e.prenom,  &e.classe, &e.presence, &e.absence);
+        
+        if (e.classe == id_classe) {
+           // printf("%d %s %s %s %d %d %d\n", matricule,e.login, e.nom, e.prenom, e.classe, e.presence, e.absence);
+            tableau_etudiants[index] = matricule;
+            index++;
+        }
+    }
+
+    fclose(fichier);
+
+    *nb_etudiants = index;
+}
+
+
+void messageClasse(int id){
+   int tab[100],nb_etudiants;
+    char msg[100];
+    printf("veuillez entrer le message : \n");
+    fgets(msg, 100, stdin); // Utilisation de fgets pour lire la chaîne complète
+    msg[strcspn(msg, "\n")] = '\0'; // Suppression du saut de ligne
+    rechercher_etudiants_par_id(id,tab, &nb_etudiants);
+    for(int i=0;i<nb_etudiants;i++){
+        envoieMsg(tab[i], msg);
+    }
+    printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
+     printf("\033[0m");
+
+
+}
+
+int listeClasses(const char* nomFichier){
+    int id;
+  
+    FILE *fichier = fopen(nomFichier, "rb");  // ouverture du fichier en mode lecture binaire
+    
+    if (fichier != NULL) {
+        Classe classe;
+         if (fichier != NULL) {
+        Classe classe;
+        while (fread(&classe, sizeof(Classe), 1, fichier) == 1) {  // lecture des classes depuis le fichier
+            printf(" %d  %s  \n", classe.id, classe.libelle);
+            // Lire et afficher les étudiants si nécessaire
+        }
+        fclose(fichier); 
+        do{
+            printf("choisir une classe\n");
+            scanf("%d", &id);
+            while(getchar() != '\n');
+            if(id < 1 || id > classe.id) printf("Choix invalide veuillez recommencer\n");
+        } while (id < 1 || id > classe.id);
+        return id;
+
+    } else {
+        printf("Erreur lors de l'ouverture du fichier.\n");
+    }
+}
+ return 0;
+}
+
+void les_mat(int tab[100],int *nb){
+    FILE *fichier;
+    char ligne[100];
+    int matricule;
+    Etudiant e;
+    int index = 0;
+
+    fichier = fopen("etudiants.txt", "r");
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.");
+        exit(1);
+    }
+
+    while (fgets(ligne, sizeof(ligne), fichier)) {
+        // Supposons que le format de ligne soit : matricule,ID_classe
+        sscanf(ligne, "%d %s %s %s %d %d %d", &matricule,e.login, e.nom, e.prenom,  &e.classe, &e.presence, &e.absence);
+        
+       
+           // printf("%d %s %s %s %d %d %d\n", matricule,e.login, e.nom, e.prenom, e.classe, e.presence, e.absence);
+            tab[index] = matricule;
+            index++;
+        
+    }
+
+    fclose(fichier);
+
+    *nb = index;
+}
+void messageaTous(){
+    int tab[100],nb_etudiants;
+    char msg[100];
+    printf("veuillez entrer le message : \n");
+    fgets(msg, 100, stdin); // Utilisation de fgets pour lire la chaîne complète
+    msg[strcspn(msg, "\n")] = '\0'; // Suppression du saut de ligne
+    les_mat(tab, &nb_etudiants);
+    for(int i=0;i<nb_etudiants;i++){
+        envoieMsg(tab[i], msg);
+    }
+    printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
+     printf("\033[0m");
+
+}
+
+void lireMessage(int matricule){
+    FILE *f = fopen("messages.txt", "r");
+    if (f == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.");
+        exit(1);
+    }
+    char ligne[100];
+    Message msg;
+    Etudiant e;
+    while (fscanf(f,"%s %99[^ ] %d %s %s %d/%d/%d à %d:%d:%d etat: %d\n", msg.source, msg.message, &msg.matricule, e.prenom, e.nom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat) != EOF) {
+        if (msg.matricule == matricule && msg.etat == 0) {
+            printf("Message de %s : %s\n", msg.source, msg.message);
+        }
+    }
+
+}
+    

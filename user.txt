@@ -1,3 +1,7 @@
-etudiant etudiant 0
 admin admin 1
-etudiant1 etudiant1 0
+etudiant passer 0
+etudiant1 passer 0
+etudiant2 passer 0
+etudiant3 passer 0
+etudiant4 passer 0
+etudiant5 passer 0
