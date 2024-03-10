@@ -524,14 +524,13 @@ void addPresenceAdmin(char login[]){
 
 
 /*********Partie Etudiants************/
-int menuEtudiant(){
+int menuEtudiant(int nbreMessages) {
     int choix;
     do
     {
-
     printf("\n\t1_______MARQUER MA PRÉSENCE\n");
     printf("\t2_________NOMBRE DE MINUTES D’ABSENCE\n");
-    printf("\t3_________MES MESSAGES (0)\n");
+    printf("\t3_________MES MESSAGES (%d)\n", nbreMessages);
     printf("\t4_________DECONNEXION\n");
     scanf("%d", &choix);
     while(getchar() != '\n');
@@ -755,21 +754,131 @@ int menuFichier(){
 
 }
 
-    void parcourirFichier() {
-    FILE *fichier = fopen("presences.txt", "r");
-    if (fichier != NULL) {
-        char line[100];
-        Etudiant e;
-        Presence presence;
-        // while (fscanf( "%d %s %s présent Date: %d/%d/%d à %d:%d:%d\n", &presence.matricule, e.nom, e.prenom, &presence.date.jour, &presence.date.mois, &presence.date.annee, &presence.date.heure, &presence.date.minute, &presence.date.seconde) != EOF) {
-            
-        // }
-        
-        fclose(fichier);
-    } else {
-        printf("Impossible d'ouvrir le fichier.\n");
-    }
+
+void afficherParDate(Date d,char *nomFichier) {
+    FILE* fichier2 = fopen("presence.txt", "r");
+    FILE* fichier=fopen(nomFichier,"a");
+    Presence p;
+    Etudiant e;
+    Classe c; 
+    if (fichier2 != NULL) {
+                fprintf(fichier, "                              Les présents du %d/%d/%d\n", d.jour, d.mois, d.annee);
+                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
+                fprintf(fichier, "| Matricule     | Classe           | Nom           | Prenom        | Heure         |\n");
+                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
+         
+    while(fscanf(fichier2, "%d %s %s %s %d/%d/%d %d:%d:%d %d\n",&e.matricule,e.classe,e.nom,e.prenom,&p.date.jour,&p.date.mois,&p.date.annee,&p.date.heure,&p.date.minute,&p.date.seconde,&p.presence) != EOF) {
+               c = diokhClasse(e.classe);
+               if (d.jour == p.date.jour && d.mois == p.date.mois && d.annee == p.date.annee) {
+                    fprintf(fichier,"|%-14d |%-17s |%-14s |%-14s |%d:%d:%d       |\n",e.matricule,c.libelle,e.nom,e.prenom,p.date.heure,p.date.minute,p.date.seconde);                   
+                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
+                }
+            }
+} else {
+    printf("Erreur lors de l'ouverture du fichier des présences.\n");
 }
+fclose(fichier);
+fclose(fichier2);
+}
+
+void afficherTous(){
+    FILE* fichier = fopen("date.txt", "r");
+    Presence p;
+    Etudiant e;
+    if (fichier != NULL) {
+        Date d;
+        while(fscanf(fichier, "%d/%d/%d", &d.jour, &d.mois, &d.annee) != EOF) {
+            //printf("%d/%d/%d\n", d.jour, d.mois, d.annee);
+            afficherParDate(d,"presencepardate.txt");   
+        }
+        fclose(fichier);
+    }
+    copyfile("presencepardate.txt", "presence_tous.txt");
+}
+
+void copyfile(char *nomFichier1, char *nomFichier2) {
+    FILE* fichier1 = fopen(nomFichier1, "r");
+    FILE* fichier2 = fopen(nomFichier2, "w");
+    if (fichier1 != NULL && fichier2 != NULL) {
+        char ch;
+        while ((ch = fgetc(fichier1)) != EOF) {
+            fputc(ch, fichier2);
+        }
+        fclose(fichier1);
+        fclose(fichier2);
+    }
+     // Suppression du fichier source
+    remove(nomFichier1);
+    // Copie du fichier source dans le fichier de destination
+    //rename(nomFichier2, nomFichier1);
+   }
+
+   int estBissextile(int annee) {
+    if ((annee % 4 == 0 && annee % 100 != 0) || (annee % 400 == 0))
+        return 1; // Si bissextile
+    else
+        return 0; // Sinon
+}
+// Fonction pour vérifier si une date est valide
+int estDateValide(int jour, int mois, int annee) {
+    // Vérification des limites des mois et du jour
+    if (mois < 1 || mois > 12 || jour < 1)
+        return 0;
+    // Vérification du nombre de jours pour février
+    if (mois == 2) {
+        if (estBissextile(annee)) {
+            if (jour > 29)
+                return 0;
+        } else {
+            if (jour > 28)
+                return 0;
+        }
+    }
+    // Vérification du nombre de jours pour les mois de 30 jours
+    else if (mois == 4 || mois == 6 || mois == 9 || mois == 11) {
+        if (jour > 30)
+            return 0;
+    }
+    // Vérification du nombre de jours pour les mois de 31 jours
+    else {
+        if (jour > 31)
+            return 0;
+    }
+    // Si la date est valide
+    return 1;
+}
+
+Date verifieDate(){
+    char date[10],ch;
+    Date d;
+    int i = 0;
+    do
+    {
+        printf("Saisir une date (JJ/MM/AAAA) : ");
+        scanf("%d/%d/%d", &d.jour, &d.mois, &d.annee);
+        while(getchar() != '\n');
+        if (!estDateValide(d.jour, d.mois, d.annee)) {
+            printf("Date invalide. Recommencez.\n");
+        }else {
+            break;
+        }
+    } while (1);
+    return d;
+    
+}
+
+void afficherAuneDate(Date d){
+    //char mot ="presence"+d.jour+"-"+d.mois+"-"+d.annee;
+    char mot[50];
+    sprintf(mot, "presence-%d-%d-%d.txt", d.jour, d.mois, d.annee);
+    printf("%s\n",mot);
+    FILE* fichier = fopen(mot, "w");
+     if (fichier != NULL) {
+        afficherParDate(d,mot);
+        fclose(fichier);
+     }
+}
+
 
 /******************************Messages*******************************/
 void envoieMsg(int matricule, char *message) {
@@ -789,7 +898,7 @@ void envoieMsg(int matricule, char *message) {
     msg.date.seconde = tm->tm_sec;
     msg.etat = 0;
     FILE *f = fopen("messages.txt", "a");
-    fprintf(f, "%s %s %d %s %s %d/%d/%d à %d:%d:%d etat: %d\n",msg.source,msg.message,msg.matricule, e.prenom, e.nom,msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde, msg.etat);
+    fprintf(f, "%s  %d %s %s %d/%d/%d à %d:%d:%d etat: %d %s\n",msg.source,msg.matricule, e.prenom, e.nom,msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde, msg.etat ,msg.message);
     fclose(f);
     //printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
 }
@@ -971,7 +1080,7 @@ void messageaTous(){
 
 }
 
-void lireMessage(int matricule){
+void lireMessage(int matricule) {
     FILE *f = fopen("messages.txt", "r");
     if (f == NULL) {
         printf("Erreur lors de l'ouverture du fichier.");
@@ -980,11 +1089,89 @@ void lireMessage(int matricule){
     char ligne[100];
     Message msg;
     Etudiant e;
-    while (fscanf(f,"%s %99[^ ] %d %s %s %d/%d/%d à %d:%d:%d etat: %d\n", msg.source, msg.message, &msg.matricule, e.prenom, e.nom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat) != EOF) {
-        if (msg.matricule == matricule && msg.etat == 0) {
-            printf("Message de %s : %s\n", msg.source, msg.message);
+    
+    while (fgets(ligne, sizeof(ligne), f) != NULL) {
+        if (sscanf(ligne, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %[^\n]", msg.source, &msg.matricule, e.nom, e.prenom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat, msg.message) != EOF) {
+            if (msg.matricule == matricule) {
+                printf("Message envoyé par:%s %s\n",msg.source, msg.message);
+                printf("Date:%d/%d/%d à %d:%d:%d\n",msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde);
+               
+            }
         }
     }
 
+    fclose(f);
+}
+        
+    
+void modifierEtatMessage(int matricule){
+    FILE *f_in = fopen("messages.txt", "r");
+    FILE *f_out = fopen("messages_temp.txt", "w"); // Fichier temporaire pour écrire les mises à jour
+
+    if (f_in == NULL || f_out == NULL) {
+        printf("Erreur lors de l'ouverture des fichiers.");
+        exit(1);
+    }
+
+    char ligne[200];
+    Message msg;
+    Etudiant e;
+    
+    while (fgets(ligne, sizeof(ligne), f_in) != NULL) {
+        if (sscanf(ligne, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %[^\n]", msg.source, &msg.matricule, e.nom, e.prenom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat, msg.message) != EOF) {
+            if (msg.matricule == matricule) {
+                msg.etat = 1;
+                fprintf(f_out, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %s\n", msg.source, msg.matricule, e.nom, e.prenom,  msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde, msg.etat, msg.message);
+            }else {
+                fprintf(f_out, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %s\n", msg.source, msg.matricule, e.nom, e.prenom,  msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde, msg.etat, msg.message);
+        
+            }
+
+        }
+    } 
+        
+
+    fclose(f_in);
+    fclose(f_out);
+
+    // Remplacer l'ancien fichier par le nouveau
+    remove("messages.txt");
+    rename("messages_temp.txt", "messages.txt");
 }
     
+
+    void nbreMessages(int mat,int *nb){
+    FILE *fichier;
+    char ligne[100];
+    int matricule;
+    Etudiant e;
+    int index = 0;
+    Message msg;
+
+    fichier = fopen("messages.txt", "r");
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.");
+        exit(1);
+    }
+
+    fseek(fichier, 0, SEEK_SET);
+    while (fgets(ligne, sizeof(ligne), fichier)) {
+        // Supposons que le format de ligne soit : matricule,ID_classe
+        sscanf(ligne, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %s", msg.source, &msg.matricule, e.nom, e.prenom,  &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat,msg.message);
+        
+        if(msg.etat == 0 && msg.matricule == mat){
+            index++;
+        }
+       
+        
+        
+       
+           // printf("%d %s %s %s %d %d %d\n", matricule,e.login, e.nom, e.prenom, e.classe, e.presence, e.absence);
+            
+        
+    }
+
+    fclose(fichier);
+
+    *nb = index;
+}

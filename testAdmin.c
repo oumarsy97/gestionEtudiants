@@ -6,15 +6,6 @@
 int main()
 {
 
-     
-        //printf("\xE2\x9C\x85\n"); // Afficher l'emoji "✅"
-       // Date date = {10, 3, 2024, 12, 0, 0};
-
-      // listeComplet();
-      //Date date = {10, 3, 2024, 12, 0, 0};
-      // enregistrer_date_fichier(date);
-   
-     // enregistrer_date_fichier(date);
     int choix;
     int con,decon=0;
     
@@ -27,11 +18,9 @@ int main()
        int tab[100],nb_etudiants=0;
        //les_mat(tab, &nb_etudiants);
       // rechercher_etudiants_par_id(2,tab, &nb_etudiants);
-      for(int i=0;i<nb_etudiants;i++){
-        printf("%d\n", tab[i]);
-      }
+     //
      // messageClasse(1);
-     lireMessage(100);
+    // lireMessage(100);
 
     Etudiant etudiant = {104,"etudiant4","Ousmane", "Ndiaye", 2, 1, 0};
     //addEtudiant( "etudiants.txt", etudiant);
@@ -69,7 +58,7 @@ do{
       int choix3 = menuFichier();
          if (choix3== 1) ;
 
-       if(choix3 == 2) afficherAunedate();
+       if(choix3 == 2) afficherTous();
     }
 
      else if (choix == 3){
@@ -100,15 +89,24 @@ do{
       
     int matricule =getMatriculeFromFile(login, "etudiants.txt");
     //recuperer la matricule
-
-    
-    int choix = menuEtudiant();
+  int a = 0;
+    nbreMessages(matricule,&a);
+    int choix = menuEtudiant(a);
 
      if(choix ==1){
         // addPresence( "presences.bin",matrice,1);
         if (verifierPresence(matricule))
             enregistrerPresence( matricule,1);
             else  printf("Presence deja marquee \n");
+     }
+
+     if(choix == 3){
+      lireMessage(matricule);
+      printf("appuyez sur une touche pour continuer...");
+      getchar();
+
+      modifierEtatMessage(matricule);
+       
      }
      if (choix == 4){
         decon =1;

@@ -91,6 +91,11 @@ Etudiant rechercheEtudiant(int);
 int menuFichier();
 void listeComplet(void);
 void parcourirFichier();
+void afficherParDate(Date d,char *nomFichier);
+void afficherTous();
+void copyfile(char *nomFichier1, char *nomFichier2) ;
+int estBissextile(int annee);
+int estDateValide(int jour, int mois, int annee);
 typedef struct {
     char source[20];
     int matricule;
@@ -101,6 +106,8 @@ typedef struct {
     int etat;
 } Message;
 
+
+
 Classe diokhClasse(int);
 int sousMenu4();
 void envoieMsg(int matricule, char *message) ;
@@ -110,9 +117,11 @@ void messageClasse(int id);
 void les_mat(int tab[100],int *nb);
 void messageaTous();
 void lireMessage(int matricule);
+void nbreMessages(int,int *nb);
+void modifierEtatMessage(int matricule);
 
 /****************partie etudiant*****************/
-int menuEtudiant();
+int menuEtudiant(int nbreMessages);
 int getMatriculeFromFile(const char* login, const char* filename);
 
 
