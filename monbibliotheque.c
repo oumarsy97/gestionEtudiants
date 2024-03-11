@@ -456,34 +456,6 @@ int verifierPresence(int matricule) {
 
 
 
-// void enregistrerPresence(int matricule, int presence) {
-//     FILE *fichier = fopen("presences.bin", "ab");
-
-//     if (fichier != NULL) {
-//         Presence newPresence;
-//         newPresence.matricule = matricule;
-//         newPresence.presence = presence;
-//         // Exemple d'obtention de la date actuelle
-//         time_t t = time(NULL);
-//         struct tm *tm = localtime(&t);
-
-//         newPresence.date.annee = tm->tm_year + 1900;
-//         newPresence.date.mois = tm->tm_mon + 1;
-//         newPresence.date.jour = tm->tm_mday;
-//         newPresence.date.heure = tm->tm_hour;
-//         newPresence.date.minute = tm->tm_min;
-//         newPresence.date.seconde = tm->tm_sec;
-
-//         fwrite(&newPresence, sizeof(Presence), 1, fichier);
-//         enregistrer_date_fichier("date.bin", newPresence.date);
-//          printf( "\xE2\x9C\x85 code valide, présence à : %d:%d \n", newPresence.date.heure, newPresence.date.minute);
-
-//         fclose(fichier);
-//     } else {
-//         printf("Erreur lors de l'ouverture du fichier");
-//     }
-// }
-
 void addPresenceAdmin(char login[]){
     char input[20], password[20];
     int matricule,s=1;
@@ -675,6 +647,45 @@ int date_existe( Date date) {
     return 0; // La date n'existe pas dans le fichier
 }
 
+int mois_existe( Date date) {
+    FILE *fichier = fopen("mois.txt", "r");
+    if (fichier != NULL) {
+        Date date_lue;
+        while (fscanf(fichier, "%d/%d", &date_lue.mois, &date_lue.annee) != EOF) {
+            //printf("%d/%d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
+            
+            if (date_lue.mois == date.mois && date_lue.annee == date.annee) {
+                fclose(fichier);
+                //printf("Date %d/%d/%d existe dans le fichier\n", date.jour, date.mois, date.annee);
+                return 1; // La date existe dans le fichier
+                }
+        }
+        fclose(fichier);
+    } else {
+        printf("Erreur lors de l'ouverture du fichier");
+    }
+    return 0; // La date n'existe pas dans le fichier
+     
+}
+void enregistrer_mois( Date date) {
+     FILE *fichier;
+
+    fichier = fopen("mois.txt", "a");
+    if (fichier != NULL) {
+        if(mois_existe( date) == 0){
+              fprintf(fichier, "%d/%d\n", date.mois, date.annee);
+              fclose(fichier);
+            
+        }
+           // printf("Date %d/%d/%d enregistree avec succes\n", date.jour, date.mois, date.annee);
+      
+        }
+        
+     else {
+        printf("Erreur lors de l'ouverture du fichier");
+    }
+    
+}
 void enregistrer_date_fichier( Date date) {
      FILE *fichier;
 
@@ -691,8 +702,40 @@ void enregistrer_date_fichier( Date date) {
     }
    
 }
+
+Date soustraite(Date date1, Date date2) {
+    Date difference;
+    difference.jour = date1.jour - date2.jour;
+    difference.mois = date1.mois - date2.mois;
+    difference.annee = date1.annee - date2.annee;
+    difference.heure = date1.heure - date2.heure;
+    difference.minute = date1.minute - date2.minute;
+    difference.seconde = date1.seconde - date2.seconde;
+    if( difference.seconde < 0){
+        difference.seconde += 60;
+        difference.minute--;
+    }
+    if( difference.minute < 0){
+        difference.minute += 60;
+        difference.heure--;
+    }
+    if( difference.heure < 0){
+        difference.heure += 24;
+        difference.jour--;
+    }
+    if( difference.jour < 0){
+        difference.jour += 30;
+        difference.mois--;
+    }
+    if( difference.mois < 0){
+        difference.mois += 12;
+        difference.annee--;
+    }
+    return difference;
+}
 void enregistrerPresence(int matricule, int presence) {
     FILE *fichier = fopen("presences.txt", "a"); // Utilisation d'un fichier texte .txt
+    FILE *f = fopen("retards.txt", "a");
     Presence newPresence;
     newPresence.matricule = matricule;
     Etudiant e= rechercheEtudiant(matricule);
@@ -708,6 +751,8 @@ void enregistrerPresence(int matricule, int presence) {
     newPresence.date.seconde = tm->tm_sec;
     if (fichier != NULL) {
         // ... (restez inchangé)
+         if(newPresence.date.heure >= 8 && newPresence.date.heure < 16){
+    
         fprintf(fichier, " %d %s %s présent Date: %d/%d/%d à %d:%d:%d\n", newPresence.matricule,e.prenom,e.nom, newPresence.date.jour, newPresence.date.mois, newPresence.date.annee, newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
         
             enregistrer_date_fichier(newPresence.date); // Vous pouvez ajuster cette fonction pour enregistrer dans un fichier texte également
@@ -715,49 +760,99 @@ void enregistrerPresence(int matricule, int presence) {
         
         printf(" \033[1;32m\xE2\x9C\x85 code valide, présence à : %d:%d:%d \n", newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
          printf("\033[0m");
+         //retard au dela de 8h et 15min
+          Date d8h15=newPresence.date;d8h15.heure=8;d8h15.minute=15; 
+          Date d= soustraite(newPresence.date,d8h15);
+        if( d.minute > 0 || d.heure > 0){
+           
+            fprintf(f, "%d %s %s Retard du %d/%d/%d de %d:%d:%d\n", newPresence.matricule,e.prenom,e.nom, newPresence.date.jour, newPresence.date.mois, newPresence.date.annee, d.heure,d.minute,d.seconde);
+            if(mois_existe( newPresence.date) == 0){
+                enregistrer_mois( newPresence.date);
+            }
+            
+        }
+
+         }
         fclose(fichier);
+        fclose(f);
     } else {
         printf("Erreur lors de l'ouverture du fichier");
     }
 }
 
-void afficher_dates(const char *nom_fichier) {
-    FILE *fichier = fopen(nom_fichier, "rb");
-    if (fichier != NULL) {
-        Date date_lue;
-        while (fread(&date_lue, sizeof(Date), 1, fichier) == 1) {
-            printf("%02d/%02d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
-        }
-        fclose(fichier);
-    } else {
-        // Gérer l'erreur d'ouverture du fichier
-    }
-}
+void cumulRetarsMois(int mois, int annee) {
+    FILE *f = fopen("retards.txt", "r");
+    FILE *c = fopen ("cumul.txt", "w");
+    if (f != NULL) {
+        int matricule;
+        int tab[100];int nb;       
+        les_mat(tab, &nb);
+        int heure, minute, seconde;
+        Presence p;
+        Etudiant e,e2;
+        fprintf(c,"+-------------------------------+\n");
+        fprintf(c,"|           Mois: %d/%d        |\n", mois, annee); 
+        fprintf(c,"+-------------------------------+\n"); 
+        fprintf(c,"| Mat |  Nom  |  Prenom | Heure |\n");  
+        fprintf(c,"+-------------------------------+\n");    
+          for(int i = 0; i < nb; i++){
+                int cumulH = 0, cumulM = 0;
+                fseek(f, 0, SEEK_SET);
+            while(fscanf(f,"%d %s %s Retard du %d/%d/%d de %d:%d:%d", &p.matricule,e.nom,e.prenom, &p.date.jour, &p.date.mois, &p.date.annee, &heure, &minute, &seconde) != EOF){
+                //printf("%d %s %s Retard du %d/%d/%d de %d:%d:%d\n", p.matricule, e.nom, e.prenom, p.date.jour, p.date.mois, p.date.annee, heure, minute, seconde);
 
-void afficherAunedate() {
-    Date date;
-        printf("veuillez entrer une date jour/mois/annee : \n");
-        scanf("%d%d%d", &date.jour, &date.mois, &date.annee);
-        if(date_existe( date))
-        listePresencesAuneDate("presences.txt", date.jour, date.mois, date.annee);
-        else
-        printf("la date n'existe pas dans le fichier");
-    
-}
+                    if(p.matricule == tab[i] && mois == p.date.mois && annee == p.date.annee){
+                        cumulH += heure;
+                        cumulM += minute;
+                        
+                    }
+         
+                } 
+               e2 = rechercheEtudiant(tab[i]);
+                
+                fprintf(c, "|%4d |%6s |%6s |%3d:%3d  |\n",tab[i],e2.prenom,e2.nom, cumulH, cumulM);
+                fprintf(c,"+-------------------------------+\n"); 
+            }
+        }
+        fclose(f);
+        fclose(c);
+               }
+        
+        
+    void cumulRetards() {
+        FILE *f = fopen ("mois.txt", "r");
+        FILE *c = fopen ("cumul.txt", "a");
+        if (f != NULL) {
+            int mois, annee;
+            while(fscanf(f, "%d/%d", &mois, &annee) != EOF) {
+                cumulRetarsMois(mois, annee);
+                printf("\n");
+            }
+            copyfile("cumul.txt", "cumuls.txt");
+          
+        }
+        fclose(f);
+        fclose(c);
+        
+    }  
+
 
 int menuFichier(){
     int choix;
     do{
         printf("1_______gererer le fichier de presence\n");
         printf("2_______gererer le fichier de presence par date\n");
-        printf("3_______retour\n");
+        printf("3_______gererer le fichier de retard\n");
+        printf("4_______retour\n");
     scanf("%d", &choix);
     while(getchar() != '\n');
-   // if(choix < 1 || choix > 3) printf("Choix invalide veuillez recommencer\n");
-    } while ( choix < 1 || choix > 3);
+    if(choix < 1 || choix > 4) printf("Choix invalide veuillez recommencer\n");
+    } while ( choix < 1 || choix > 4);
     return choix;
 
 }
+
+
 
 
 void afficherParDate(Date d,char *nomFichier) {
@@ -953,7 +1048,6 @@ void Messageaetudiant(){
     envoieMsg(matricule, msg);
     printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
      printf("\033[0m"); 
-
 
 }
 
@@ -1252,3 +1346,6 @@ void modifierEtatMessage(int matricule){
 
     *nb = index;
 }
+
+/*************gestion etudiants*************/
+    

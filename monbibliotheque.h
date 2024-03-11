@@ -123,6 +123,11 @@ void lireMessage(int matricule);
 void nbreMessages(int,int *nb);
 void modifierEtatMessage(int matricule);
 void messageAdesEtudiants();
+Date soustraite(Date date1, Date date2);
+void enregistrer_mois( Date date);
+int mois_existe( Date date) ;
+void cumulRetarsMois(int mois, int annee) ;
+void cumulRetards() ;;
 
 /****************partie etudiant*****************/
 int menuEtudiant(int nbreMessages);

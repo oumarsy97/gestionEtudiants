@@ -5,6 +5,7 @@
 
 int main()
 {
+  //cumulRetarsMois(3,2024);
   
     int choix;
     int con,decon=0;
@@ -63,6 +64,10 @@ do{
        if(choix3 == 2) {
        afficherAuneDate( verifieDate());
        };
+       if(choix3 == 3){
+        cumulRetards();
+       }
+       
     }
 
      else if (choix == 3){
@@ -105,7 +110,7 @@ do{
         // addPresence( "presences.bin",matrice,1);
         if (verifierPresence(matricule))
             enregistrerPresence( matricule,1);
-            else { printf( "\033[1;31m \u274C Presence deja marquée. \n");
+            else { printf( "\033[1;31m \u274C Presence deja marquée \n");
              printf("\033[0m");
             printf("appuyez sur une touche pour continuer...");
             getchar();
