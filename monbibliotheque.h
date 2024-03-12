@@ -127,7 +127,13 @@ Date soustraite(Date date1, Date date2);
 void enregistrer_mois( Date date);
 int mois_existe( Date date) ;
 void cumulRetarsMois(int mois, int annee) ;
-void cumulRetards() ;;
+void cumulRetards() ;
+void supprimerApprenant(const char* nomFichier, int matricule);
+void liremesretards(int matricule);
+void ajouterNouveauEtudiant();
+Etudiant entrerinfosApprenant();
+
+void modifierApprenant(const char* nomFichier, int matricule, Etudiant nouvelEtudiant);
 
 /****************partie etudiant*****************/
 int menuEtudiant(int nbreMessages);

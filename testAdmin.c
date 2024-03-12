@@ -53,6 +53,35 @@ do{
     if(choix == 1){
       int choix2;
      choix2 = menuGestionEtudiant();
+     if(choix2 == 1){
+       ajouterNouveauEtudiant();
+       printf("Etudiant ajouté avec succes \n");
+     }
+     if (choix2 == 2){
+      int mat;
+      do{
+      printf("Saisissez le matricule de l'apprenant que vous souhaitez modifier : \n");
+      scanf("%d",&mat);
+      if(!verifieMatricule(&mat)) printf("Matricule invalide \n");
+      }while(!verifieMatricule(&mat));
+       modifierApprenant("etudiants.txt", verifieMatricule(&mat), etudiant);
+       printf("Etudiant modifié avec succes \n");
+     }
+     if (choix2 == 3){
+      int mat,c;
+      do{
+        printf("Saisissez le matricule de l'apprenant que vous souhaitez supprimer : \n");
+        scanf("%d",&mat);
+        if(!verifieMatricule(&mat)) printf("Matricule invalide \n");
+
+      }while(!verifieMatricule(&mat));
+      printf(" vous etes sur de vouloir supprimer l'apprenant %d \n", mat);
+      printf("Appuyer sur 1 pour confirmer ");
+      scanf("%d",&c);
+      if(c == 1)
+       supprimerApprenant("etudiants.txt", mat);
+
+     }
     }
 
      else if (choix == 2){
@@ -115,6 +144,10 @@ do{
             printf("appuyez sur une touche pour continuer...");
             getchar();
             }
+     } if(choix == 2){
+       liremesretards(matricule);
+       printf("appuyez sur une touche pour continuer...");
+       getchar();
      }
 
      if(choix == 3){

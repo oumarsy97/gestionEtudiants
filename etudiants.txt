@@ -3,3 +3,4 @@
 102 etudiant2 Fall Codu 1  1 0
 103 etudiant3 Ndiaye Fatou 2  1 0
 104 etudiant4 Ndiaye Ousmane 2 1 0
+9383 etudiant6 Fatima SOW 1 0 0

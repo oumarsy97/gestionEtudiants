@@ -772,6 +772,8 @@ void enregistrerPresence(int matricule, int presence) {
             
         }
 
+         }else {
+             printf("\033[1;31m\xE2\x9C\x85 code invalide, vous devez avoir entre 8h et 16h pour etre present \033[0m\n");
          }
         fclose(fichier);
         fclose(f);
@@ -790,11 +792,8 @@ void cumulRetarsMois(int mois, int annee) {
         int heure, minute, seconde;
         Presence p;
         Etudiant e,e2;
-        fprintf(c,"+-------------------------------+\n");
-        fprintf(c,"|           Mois: %d/%d        |\n", mois, annee); 
-        fprintf(c,"+-------------------------------+\n"); 
-        fprintf(c,"| Mat |  Nom  |  Prenom | Heure |\n");  
-        fprintf(c,"+-------------------------------+\n");    
+        
+        fprintf(c,"        cumul de retards du mois: %d/%d        \n", mois, annee);    
           for(int i = 0; i < nb; i++){
                 int cumulH = 0, cumulM = 0;
                 fseek(f, 0, SEEK_SET);
@@ -810,8 +809,8 @@ void cumulRetarsMois(int mois, int annee) {
                 } 
                e2 = rechercheEtudiant(tab[i]);
                 
-                fprintf(c, "|%4d |%6s |%6s |%3d:%3d  |\n",tab[i],e2.prenom,e2.nom, cumulH, cumulM);
-                fprintf(c,"+-------------------------------+\n"); 
+                fprintf(c, "%4d %6s %6s  %d:%d\n",tab[i],e2.prenom,e2.nom, cumulH, cumulM);
+                 
             }
         }
         fclose(f);
@@ -1347,5 +1346,107 @@ void modifierEtatMessage(int matricule){
     *nb = index;
 }
 
+void liremesretards(int matricule){
+    FILE *f = fopen("retards.txt", "r");
+    Etudiant e;
+    Presence p;
+    int heure, minute, seconde;
+    char ligne[100];
+
+    if (f == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.");
+        exit(1);
+    }
+    while(fgets(ligne, sizeof(ligne), f) != NULL){
+        sscanf(ligne,"%d %s %s Retard du %d/%d/%d de %d:%d:%d\n", &p.matricule,e.nom,e.prenom, &p.date.jour, &p.date.mois, &p.date.annee, &heure, &minute, &seconde);
+
+        if(p.matricule == matricule){
+            printf("%d %s %s Retard du %d/%d/%d de %d:%d:%d\n", p.matricule, e.nom, e.prenom, p.date.jour, p.date.mois, p.date.annee, heure, minute, seconde);
+}
+    }
+
+    fclose(f);
+
+}
+
 /*************gestion etudiants*************/
+    void supprimerApprenant(const char* nomFichier, int matricule){
+    FILE *fichier = fopen(nomFichier, "r+"); // Ouverture en mode lecture/écriture
+
+    if(fichier != NULL){
+        FILE *temp = fopen("temp.txt", "w"); // Fichier temporaire pour écrire les données modifiées
+
+        if(temp != NULL){
+            Etudiant etudiant;
+
+            while(fscanf(fichier, "%d %s %s %s %d %d %d\n",&etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF){
+                if(etudiant.matricule != matricule){
+                    fprintf(temp, "%d %s %s %s %d %d %d\n", etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, etudiant.classe, etudiant.presence, etudiant.absence);
+                }
+            }
+            fclose(fichier);
+            fclose(temp);
+            remove(nomFichier); // Supprimer le fichier d'origine
+            rename("temp.txt", nomFichier); // Renommer le fichier temporaire
+            printf("Etudiant supprimé avec succès.\n");
+        } else {
+            printf("Erreur lors de la création du fichier temporaire.\n");
+        }
+    } else {
+        printf("Erreur lors de l'ouverture du fichier.\n");
+    }
+}
+
+void modifierApprenant(const char* nomFichier, int matricule, Etudiant nouvelEtudiant){
+    FILE *fichier = fopen(nomFichier, "r+"); // Ouverture en mode lecture/écriture
+
+    if(fichier != NULL){
+        Etudiant etudiant;
+        long position;
+        while(fscanf(fichier, "%d %s %s %s %d %d %d",&etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF){
+            if(etudiant.matricule == matricule){
+                position = ftell(fichier) - (sizeof(etudiant) * 1);
+                fseek(fichier, position, SEEK_SET);
+                fprintf(fichier, "%d %s %s %s %d %d %d\n", nouvelEtudiant.matricule, nouvelEtudiant.login, nouvelEtudiant.nom, nouvelEtudiant.prenom, nouvelEtudiant.classe, nouvelEtudiant.presence, nouvelEtudiant.absence);
+                printf("Etudiant modifié avec succès.\n");
+                fclose(fichier);
+                return;
+            }
+        }
+        printf("Aucun étudiant trouvé avec le matricule %d.\n", matricule);
+        fclose(fichier);
+    } else {
+        printf("Erreur lors de l'ouverture du fichier.\n");
+    }
+}
+
+void ajouterNouveauEtudiant(){
+    Etudiant e = entrerinfosApprenant();
+    addEtudiant("etudiants.txt", e);
+}
+
+Etudiant entrerinfosApprenant(){
+    Etudiant nouveauEtudiant;
+
+    //matricule aléatoirement
+    nouveauEtudiant.matricule = rand() % 10000;
+    User user;
+    printf("Login : \n");
+    scanf("%s", nouveauEtudiant.login);
+    printf("Nom : \n");
+    scanf("%s", nouveauEtudiant.nom);
+    printf("Prenom : ");
+    scanf("%s", nouveauEtudiant.prenom);
+    nouveauEtudiant.classe = listeClasses( "classes.bin");
+    strcpy(user.login, nouveauEtudiant.login);
+    strcpy(user.password, "passer");
+    user.type = 0;
+    nouveauEtudiant.presence = 0;
+    nouveauEtudiant.absence = 0;
+    enregistrerUser(user);
+   
     
+
+  while(getchar() != '\n');
+    return nouveauEtudiant;
+}

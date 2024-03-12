@@ -5,3 +5,4 @@ etudiant2 passer 0
 etudiant3 passer 0
 etudiant4 passer 0
 etudiant5 passer 0
+etudiant6 passer 0
