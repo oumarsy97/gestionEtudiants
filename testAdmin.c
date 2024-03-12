@@ -6,7 +6,10 @@
 int main()
 {
   //cumulRetarsMois(3,2024);
+  // Etudiant etudiant = {886,"etudiant12","Ousmane", "Ndiaye", 2, 1, 0};
+  // modifierEtudiant1("etudiants.txt", 886, &etudiant);
   
+  listeArenvois();
     int choix;
     int con,decon=0;
     
@@ -23,7 +26,7 @@ int main()
      // messageClasse(1);
     // lireMessage(100);
 
-    Etudiant etudiant = {104,"etudiant4","Ousmane", "Ndiaye", 2, 1, 0};
+   // Etudiant etudiant = {104,"etudiant4","Ousmane", "Ndiaye", 2, 1, 0};
     //addEtudiant( "etudiants.txt", etudiant);
    //  User user = {"etudiant", "etudiant", 0};
    //  char hashedPassword[65];
@@ -58,29 +61,10 @@ do{
        printf("Etudiant ajouté avec succes \n");
      }
      if (choix2 == 2){
-      int mat;
-      do{
-      printf("Saisissez le matricule de l'apprenant que vous souhaitez modifier : \n");
-      scanf("%d",&mat);
-      if(!verifieMatricule(&mat)) printf("Matricule invalide \n");
-      }while(!verifieMatricule(&mat));
-       modifierApprenant("etudiants.txt", verifieMatricule(&mat), etudiant);
-       printf("Etudiant modifié avec succes \n");
+      
      }
      if (choix2 == 3){
-      int mat,c;
-      do{
-        printf("Saisissez le matricule de l'apprenant que vous souhaitez supprimer : \n");
-        scanf("%d",&mat);
-        if(!verifieMatricule(&mat)) printf("Matricule invalide \n");
-
-      }while(!verifieMatricule(&mat));
-      printf(" vous etes sur de vouloir supprimer l'apprenant %d \n", mat);
-      printf("Appuyer sur 1 pour confirmer ");
-      scanf("%d",&c);
-      if(c == 1)
-       supprimerApprenant("etudiants.txt", mat);
-
+     
      }
     }
 

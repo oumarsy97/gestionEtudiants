@@ -131,10 +131,11 @@ void cumulRetards() ;
 void supprimerApprenant(const char* nomFichier, int matricule);
 void liremesretards(int matricule);
 void ajouterNouveauEtudiant();
-Etudiant entrerinfosApprenant();
+Etudiant newApprenant();
+void listeArenvois();
+Date cumulEtudiant(int mat);
 
-void modifierApprenant(const char* nomFichier, int matricule, Etudiant nouvelEtudiant);
-
+void modifierEtudiant1(const char* nomFichier, int matriculeRecherche, Etudiant* nouvelEtudiant) ;
 /****************partie etudiant*****************/
 int menuEtudiant(int nbreMessages);
 int getMatriculeFromFile(const char* login, const char* filename);

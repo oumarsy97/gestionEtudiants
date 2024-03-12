@@ -238,9 +238,7 @@ int ajouterEtudiant(){
 
 }
 
-void modifierEtudiant(Etudiant e){
-   
-}
+
 
 void supprimerEtudiant(Etudiant e){
     int matricule = e.matricule;
@@ -1240,7 +1238,7 @@ void lireMessage(int matricule) {
                 printf("\033[0m"); // Réinitialiser la couleur
                 printf("|");
                 printf("\033[1;36m"); // Cyan gras
-                printf("Message: %-30s |\n", msg.message);
+                printf("Message: %-30s|\n", msg.message);
                 printf("\033[0m"); // Réinitialiser la couleur
                 printf("+--------------------------------------+\n");
             }
@@ -1369,67 +1367,57 @@ void liremesretards(int matricule){
 
 }
 
+Date cumulEtudiant(int mat){
+    FILE *f = fopen("retards.txt", "r");
+    Etudiant e;
+    Presence p;
+    int heure=0, minute=0, seconde;
+    while(fscanf(f,"%d %s %s Retard du %d/%d/%d de %d:%d:%d", &p.matricule,e.nom,e.prenom, &p.date.jour, &p.date.mois, &p.date.annee, &heure, &minute, &seconde) != EOF){
+        if (p.matricule == mat){
+            heure += p.date.heure;
+            minute += p.date.minute;
+        }
+    }
+
+    fclose(f);
+    return (Date){.jour = 0, .mois = 0, .annee = 0, .heure = heure, .minute = minute, .seconde = 0};
+   
+}
+
+void listeArenvois(){
+    FILE *f = fopen("renvois.txt", "r");
+    Etudiant e;
+    Presence p;
+    int tab[100], nb;
+    les_mat(tab, &nb);
+    for(int i = 0; i < nb; i++){
+        Date d =cumulEtudiant(tab[i]);
+        if(d.heure > 1){
+            fprintf(f,"%d %s %s\n", tab[i], e.nom, e.prenom);
+        }
+    }
+
+}
+
 /*************gestion etudiants*************/
-    void supprimerApprenant(const char* nomFichier, int matricule){
-    FILE *fichier = fopen(nomFichier, "r+"); // Ouverture en mode lecture/écriture
-
-    if(fichier != NULL){
-        FILE *temp = fopen("temp.txt", "w"); // Fichier temporaire pour écrire les données modifiées
-
-        if(temp != NULL){
-            Etudiant etudiant;
-
-            while(fscanf(fichier, "%d %s %s %s %d %d %d\n",&etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF){
-                if(etudiant.matricule != matricule){
-                    fprintf(temp, "%d %s %s %s %d %d %d\n", etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, etudiant.classe, etudiant.presence, etudiant.absence);
-                }
-            }
-            fclose(fichier);
-            fclose(temp);
-            remove(nomFichier); // Supprimer le fichier d'origine
-            rename("temp.txt", nomFichier); // Renommer le fichier temporaire
-            printf("Etudiant supprimé avec succès.\n");
-        } else {
-            printf("Erreur lors de la création du fichier temporaire.\n");
-        }
-    } else {
-        printf("Erreur lors de l'ouverture du fichier.\n");
-    }
+void supprimerApprenant(const char* nomFichier, int matricule){
+    FILE *f = fopen(nomFichier, "r");
+    FILE *c = fopen ("temp.txt", "w");
+    Etudiant e;
+    Presence p;
+   
+    
 }
 
-void modifierApprenant(const char* nomFichier, int matricule, Etudiant nouvelEtudiant){
-    FILE *fichier = fopen(nomFichier, "r+"); // Ouverture en mode lecture/écriture
-
-    if(fichier != NULL){
-        Etudiant etudiant;
-        long position;
-        while(fscanf(fichier, "%d %s %s %s %d %d %d",&etudiant.matricule, etudiant.login, etudiant.nom, etudiant.prenom, &etudiant.classe, &etudiant.presence, &etudiant.absence) != EOF){
-            if(etudiant.matricule == matricule){
-                position = ftell(fichier) - (sizeof(etudiant) * 1);
-                fseek(fichier, position, SEEK_SET);
-                fprintf(fichier, "%d %s %s %s %d %d %d\n", nouvelEtudiant.matricule, nouvelEtudiant.login, nouvelEtudiant.nom, nouvelEtudiant.prenom, nouvelEtudiant.classe, nouvelEtudiant.presence, nouvelEtudiant.absence);
-                printf("Etudiant modifié avec succès.\n");
-                fclose(fichier);
-                return;
-            }
-        }
-        printf("Aucun étudiant trouvé avec le matricule %d.\n", matricule);
-        fclose(fichier);
-    } else {
-        printf("Erreur lors de l'ouverture du fichier.\n");
-    }
-}
-
-void ajouterNouveauEtudiant(){
-    Etudiant e = entrerinfosApprenant();
-    addEtudiant("etudiants.txt", e);
-}
-
-Etudiant entrerinfosApprenant(){
+Etudiant newApprenant(){
     Etudiant nouveauEtudiant;
 
     //matricule aléatoirement
-    nouveauEtudiant.matricule = rand() % 10000;
+    do {
+        nouveauEtudiant.matricule = rand() % 10000;
+
+    }while(verifieMatricule(&nouveauEtudiant.matricule));
+    
     User user;
     printf("Login : \n");
     scanf("%s", nouveauEtudiant.login);
@@ -1445,8 +1433,13 @@ Etudiant entrerinfosApprenant(){
     nouveauEtudiant.absence = 0;
     enregistrerUser(user);
    
-    
-
   while(getchar() != '\n');
     return nouveauEtudiant;
 }
+
+
+void ajouterNouveauEtudiant(){
+    Etudiant e = newApprenant();
+    addEtudiant("etudiants.txt", e);
+}
+

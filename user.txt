@@ -6,3 +6,6 @@ etudiant3 passer 0
 etudiant4 passer 0
 etudiant5 passer 0
 etudiant6 passer 0
+etudiant7 passer 0
+etudiant8 passer 0
+etudiant9 passer 0
