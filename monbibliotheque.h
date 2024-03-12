@@ -96,6 +96,9 @@ void afficherTous();
 void copyfile(char *nomFichier1, char *nomFichier2) ;
 int estBissextile(int annee);
 int estDateValide(int jour, int mois, int annee);
+Date verifieDate();
+void afficherAuneDate(Date d);
+void affichierFichier(char *nomFichier);
 typedef struct {
     char source[20];
     int matricule;
@@ -119,6 +122,7 @@ void messageaTous();
 void lireMessage(int matricule);
 void nbreMessages(int,int *nb);
 void modifierEtatMessage(int matricule);
+void messageAdesEtudiants();
 
 /****************partie etudiant*****************/
 int menuEtudiant(int nbreMessages);

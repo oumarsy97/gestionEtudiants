@@ -5,7 +5,7 @@
 
 int main()
 {
-
+  
     int choix;
     int con,decon=0;
     
@@ -56,9 +56,13 @@ do{
 
      else if (choix == 2){
       int choix3 = menuFichier();
-         if (choix3== 1) ;
+         if (choix3== 1) {afficherTous() ;
+         printf(" fichier de presence generer avec succes  \n");
+         }
 
-       if(choix3 == 2) afficherTous();
+       if(choix3 == 2) {
+       afficherAuneDate( verifieDate());
+       };
     }
 
      else if (choix == 3){
@@ -75,8 +79,9 @@ do{
             messageClasse(idclasse);
           };
           if(c4 == 3){
-            Messageaetudiant();
+            messageAdesEtudiants();
           };
+          
      }
 
      else if (choix == 5){   
@@ -86,6 +91,9 @@ do{
    }
     
    else if (con == 0){
+    while(1){
+
+  
       
     int matricule =getMatriculeFromFile(login, "etudiants.txt");
     //recuperer la matricule
@@ -97,7 +105,11 @@ do{
         // addPresence( "presences.bin",matrice,1);
         if (verifierPresence(matricule))
             enregistrerPresence( matricule,1);
-            else  printf("Presence deja marquee \n");
+            else { printf( "\033[1;31m \u274C Presence deja marquée. \n");
+             printf("\033[0m");
+            printf("appuyez sur une touche pour continuer...");
+            getchar();
+            }
      }
 
      if(choix == 3){
@@ -110,9 +122,11 @@ do{
      }
      if (choix == 4){
         decon =1;
+        break;
      }
 
    }
+     }
    
    }while(decon != 1);
   

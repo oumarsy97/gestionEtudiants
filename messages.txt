@@ -1,3 +1,28 @@
-admin 100 pape gaye 10/3/2024 à 19:4:59 etat: 0 naguen def naka souba si
-admin 101 aly Diop 10/3/2024 à 19:4:59 etat: 0 naguen def naka souba si
+admin 100 pape gaye 10/3/2024 à 19:4:59 etat: 1 naguen def naka souba si
+admin 101 aly Diop 10/3/2024 à 19:4:59 etat: 1 naguen def naka souba si
 admin 102 Codu Fall 10/3/2024 à 19:4:59 etat: 0 naguen def naka souba si
+admin 101 aly Diop 10/3/2024 à 22:44:37 etat: 1 a demain inchalla
+admin 100 pape gaye 11/3/2024 à 7:40:33 etat: 1 salut bon debut de semaine
+admin 101 aly Diop 11/3/2024 à 7:40:33 etat: 1 salut bon debut de semaine
+admin 102 Codu Fall 11/3/2024 à 7:40:33 etat: 0 salut bon debut de semaine
+admin 103 Fatou Ndiaye 11/3/2024 à 7:40:33 etat: 0 salut bon debut de semaine
+admin 104 Ousmane Ndiaye 11/3/2024 à 7:40:33 etat: 1 salut bon debut de semaine
+admin 100 pape gaye 11/3/2024 à 8:25:42 etat: 1 salut
+admin 101 aly Diop 11/3/2024 à 8:25:42 etat: 1 salut
+admin 102 Codu Fall 11/3/2024 à 8:25:42 etat: 0 salut
+admin 103 Fatou Ndiaye 11/3/2024 à 8:25:42 etat: 0 salut
+admin 104 Ousmane Ndiaye 11/3/2024 à 8:25:42 etat: 1 salut
+admin 103 Fatou Ndiaye 11/3/2024 à 8:26:17 etat: 0 bonsoir
+admin 104 Ousmane Ndiaye 11/3/2024 à 8:26:17 etat: 1 bonsoir
+admin 104 Ousmane Ndiaye 11/3/2024 à 8:26:47 etat: 1 nagua def
+admin 100 pape gaye 11/3/2024 à 8:31:45 etat: 1 demain y a pas cours
+admin 101 aly Diop 11/3/2024 à 8:31:45 etat: 1 demain y a pas cours
+admin 102 Codu Fall 11/3/2024 à 8:31:45 etat: 0 demain y a pas cours
+admin 103 Fatou Ndiaye 11/3/2024 à 8:31:45 etat: 0 demain y a pas cours
+admin 104 Ousmane Ndiaye 11/3/2024 à 8:31:45 etat: 0 demain y a pas cours
+admin 100 pape gaye 11/3/2024 à 9:20:50 etat: 1 bonne nuit
+admin 101 aly Diop 11/3/2024 à 9:22:1 etat: 0 aazerty
+admin 100 pape gaye 11/3/2024 à 9:22:1 etat: 1 aazerty
+admin 100 pape gaye 11/3/2024 à 9:34:49 etat: 1 bonsoir
+admin 100 pape gaye 11/3/2024 à 9:36:5 etat: 1 AZRUTFF
+admin 100 pape gaye 11/3/2024 à 9:55:15 etat: 1 demain ya cours

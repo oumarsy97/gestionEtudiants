@@ -512,7 +512,12 @@ void addPresenceAdmin(char login[]){
             else {
              if (verifierPresence(matricule))
             enregistrerPresence( matricule,1);
-            else  printf("Presence deja marquee \n");
+            else  {
+                printf( "\033[1;31m \u274C Presence deja marquée. \n");
+             printf("\033[0m");
+            printf("appuyez sur une touche pour continuer...");
+            getchar();
+            }
             }
 
     }
@@ -655,7 +660,7 @@ int date_existe( Date date) {
     if (fichier != NULL) {
         Date date_lue;
         while (fscanf(fichier, "%d/%d/%d", &date_lue.jour, &date_lue.mois, &date_lue.annee) != EOF) {
-            printf("%d/%d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
+            //printf("%d/%d/%d\n", date_lue.jour, date_lue.mois, date_lue.annee);
             
             if (date_lue.jour == date.jour && date_lue.mois == date.mois && date_lue.annee == date.annee) {
                 fclose(fichier);
@@ -708,8 +713,8 @@ void enregistrerPresence(int matricule, int presence) {
             enregistrer_date_fichier(newPresence.date); // Vous pouvez ajuster cette fonction pour enregistrer dans un fichier texte également
         
         
-        printf("\xE2\x9C\x85 code valide, présence à : %d:%d:%d \n", newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
-
+        printf(" \033[1;32m\xE2\x9C\x85 code valide, présence à : %d:%d:%d \n", newPresence.date.heure, newPresence.date.minute, newPresence.date.seconde);
+         printf("\033[0m");
         fclose(fichier);
     } else {
         printf("Erreur lors de l'ouverture du fichier");
@@ -756,22 +761,24 @@ int menuFichier(){
 
 
 void afficherParDate(Date d,char *nomFichier) {
-    FILE* fichier2 = fopen("presence.txt", "r");
+    FILE* fichier2 = fopen("presences.txt", "r");
     FILE* fichier=fopen(nomFichier,"a");
     Presence p;
     Etudiant e;
     Classe c; 
     if (fichier2 != NULL) {
                 fprintf(fichier, "                              Les présents du %d/%d/%d\n", d.jour, d.mois, d.annee);
-                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
-                fprintf(fichier, "| Matricule     | Classe           | Nom           | Prenom        | Heure         |\n");
-                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
+                fprintf(fichier, "+---------------+---------------+---------------+---------------+\n");
+                fprintf(fichier, "|  Matricule    | Prénom        | Nom          | Heure          |\n");
+                fprintf(fichier, "+---------------+---------------+---------------+---------------+\n");
          
-    while(fscanf(fichier2, "%d %s %s %s %d/%d/%d %d:%d:%d %d\n",&e.matricule,e.classe,e.nom,e.prenom,&p.date.jour,&p.date.mois,&p.date.annee,&p.date.heure,&p.date.minute,&p.date.seconde,&p.presence) != EOF) {
-               c = diokhClasse(e.classe);
+    while(fscanf(fichier2, "%d %s %s présent Date: %d/%d/%d à %d:%d:%d\n", &e.matricule, e.nom, e.prenom, &p.date.jour, &p.date.mois, &p.date.annee, &p.date.heure, &p.date.minute, &p.date.seconde) != EOF) {
+            //    Etudiant e1 = rechercheEtudiant(p.matricule);
+            //    printf("%d",e1.classe);
+                c = diokhClasse(e.classe);
                if (d.jour == p.date.jour && d.mois == p.date.mois && d.annee == p.date.annee) {
-                    fprintf(fichier,"|%-14d |%-17s |%-14s |%-14s |%d:%d:%d       |\n",e.matricule,c.libelle,e.nom,e.prenom,p.date.heure,p.date.minute,p.date.seconde);                   
-                fprintf(fichier, "+---------------+------------------+---------------+---------------+---------------+\n");
+                    fprintf(fichier,"|%-14d |%-14s |%-14s |%d:%d:%d        |\n",e.matricule,e.nom,e.prenom,p.date.heure,p.date.minute,p.date.seconde);                   
+                fprintf(fichier, "+---------------+---------------+---------------+---------------+\n");
                 }
             }
 } else {
@@ -794,6 +801,7 @@ void afficherTous(){
         fclose(fichier);
     }
     copyfile("presencepardate.txt", "presence_tous.txt");
+    affichierFichier("presence_tous.txt");
 }
 
 void copyfile(char *nomFichier1, char *nomFichier2) {
@@ -871,7 +879,7 @@ void afficherAuneDate(Date d){
     //char mot ="presence"+d.jour+"-"+d.mois+"-"+d.annee;
     char mot[50];
     sprintf(mot, "presence-%d-%d-%d.txt", d.jour, d.mois, d.annee);
-    printf("%s\n",mot);
+   // printf("%s\n",mot);
     FILE* fichier = fopen(mot, "w");
      if (fichier != NULL) {
         afficherParDate(d,mot);
@@ -879,6 +887,17 @@ void afficherAuneDate(Date d){
      }
 }
 
+
+void affichierFichier(char *nomFichier) {
+    FILE *f =fopen(nomFichier, "r");
+    if (f != NULL) {
+        char ch;
+        while ((ch = fgetc(f)) != EOF) {
+            printf("%c", ch);
+        }
+        fclose(f);
+    }
+}
 
 /******************************Messages*******************************/
 void envoieMsg(int matricule, char *message) {
@@ -1073,10 +1092,37 @@ void messageaTous(){
     msg[strcspn(msg, "\n")] = '\0'; // Suppression du saut de ligne
     les_mat(tab, &nb_etudiants);
     for(int i=0;i<nb_etudiants;i++){
+        
         envoieMsg(tab[i], msg);
     }
     printf(Green"Message envoyé avec succès \xE2\x9C\x85\n");
      printf("\033[0m");
+
+}
+
+void messageAdesEtudiants(){
+    char input[100];
+    char msg[100];
+    printf("Veuillez saisir les matricules séparés par des virgules: \n");
+    fgets(input, 100, stdin);
+
+    // Découper la chaîne en matricules individuels
+    char *token = strtok(input, ",");
+    printf(" veillez entrer le message\n");
+        fgets(msg, 100, stdin);
+        msg[strcspn(msg, "\n")] = '\0';
+    while (token != NULL) {
+        int matricule = atoi(token);
+        if(!verifieMatricule(&matricule)){
+            printf("Matricule  %d invalide\n", matricule);
+        }else{
+            envoieMsg(matricule, msg);
+            
+           
+        }
+        token = strtok(NULL, ",");
+        
+    }
 
 }
 
@@ -1092,16 +1138,52 @@ void lireMessage(int matricule) {
     
     while (fgets(ligne, sizeof(ligne), f) != NULL) {
         if (sscanf(ligne, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %[^\n]", msg.source, &msg.matricule, e.nom, e.prenom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat, msg.message) != EOF) {
-            if (msg.matricule == matricule) {
-                printf("Message envoyé par:%s %s\n",msg.source, msg.message);
-                printf("Date:%d/%d/%d à %d:%d:%d\n",msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde);
-               
+            if (msg.matricule == matricule && msg.etat == 0) {
+                printf("Date: %d/%d/%d à %d:%d:%d\n", msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde);
+                printf("+--------------------------------------+\n");
+                printf("|");
+                printf("\033[1;33m"); // Jaune gras
+                printf("Message envoyé par: %-17s |\n", msg.source);
+                printf("\033[0m"); // Réinitialiser la couleur
+                printf("|");
+                printf("\033[1;36m"); // Cyan gras
+                printf("Message: %-30s |\n", msg.message);
+                printf("\033[0m"); // Réinitialiser la couleur
+                printf("+--------------------------------------+\n");
             }
         }
     }
 
     fclose(f);
 }
+// void lireMessage(int matricule) {
+//     FILE *f = fopen("messages.txt", "r");
+//     if (f == NULL) {
+//         printf("Erreur lors de l'ouverture du fichier.");
+//         exit(1);
+//     }
+//     char ligne[100];
+//     Message msg;
+//     Etudiant e;
+    
+//     while (fgets(ligne, sizeof(ligne), f) != NULL) {
+//         if (sscanf(ligne, "%s %d %s %s %d/%d/%d à %d:%d:%d etat: %d %[^\n]", msg.source, &msg.matricule, e.nom, e.prenom, &msg.date.jour, &msg.date.mois, &msg.date.annee, &msg.date.heure, &msg.date.minute, &msg.date.seconde, &msg.etat, msg.message) != EOF) {
+//             if (msg.matricule == matricule) {
+//               printf("  +---------------+------------------+");
+//               printf("||")
+//               printf("  +---------------+------------------+");
+//                 printf( Yellow"Message envoyé par:%s\n",msg.source);
+//                printf("\033[0m");
+//                 printf( Cyan "Message:%s\n",msg .message);
+//                 printf("\033[0m");
+//                 printf("Date:%d/%d/%d à %d:%d:%d\n",msg.date.jour, msg.date.mois, msg.date.annee, msg.date.heure, msg.date.minute, msg.date.seconde);
+               
+//             }
+//         }
+//     }
+
+//     fclose(f);
+// }
         
     
 void modifierEtatMessage(int matricule){
@@ -1162,13 +1244,8 @@ void modifierEtatMessage(int matricule){
         if(msg.etat == 0 && msg.matricule == mat){
             index++;
         }
-       
-        
-        
-       
            // printf("%d %s %s %s %d %d %d\n", matricule,e.login, e.nom, e.prenom, e.classe, e.presence, e.absence);
-            
-        
+                   
     }
 
     fclose(fichier);
